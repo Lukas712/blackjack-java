@@ -51,8 +51,11 @@ public final class Rodada {
     public void jogar() {
         distribuirMaosIniciais();
         visao.exibirCartaVisivelDoBanqueiro(banqueiro.cartaVisivel());
+        jogadores.forEach(this::exibirMaoInicial);
         ofertarSeguroATodos();
-        jogadores.forEach(this::jogarTodasAsMaosDe);
+        if (!banqueiroConfirmouBlackjackNatural()) {
+            jogadores.forEach(this::jogarTodasAsMaosDe);
+        }
         jogarTurnoDoBanqueiro();
         liquidarTodosOsJogadores();
     }
@@ -83,14 +86,39 @@ public final class Rodada {
         return lotes;
     }
 
-    private void ofertarSeguroATodos() {
-        jogadores.forEach(this::ofertarSeguro);
+    private void exibirMaoInicial(Jogador jogador) {
+        Mao mao = jogador.maos().get(0);
+        visao.exibirMao(jogador.nome(), mao, 1, 1);
+        if (mao.ehBlackjackNatural()) {
+            visao.exibirMensagem(jogador.nome() + " tem Blackjack natural!");
+        }
     }
 
-    private void ofertarSeguro(Jogador jogador) {
+    // A carta oculta so e verificada quando a visivel e um As; com 10/J/Q/K ela permanece oculta.
+    private boolean banqueiroConfirmouBlackjackNatural() {
+        return banqueiro.cartaVisivel().ehAs() && banqueiro.mao().ehBlackjackNatural();
+    }
+
+    private void ofertarSeguroATodos() {
+        boolean ofertou = false;
+        for (Jogador jogador : jogadores) {
+            ofertou |= ofertarSeguro(jogador);
+        }
+        if (banqueiroConfirmouBlackjackNatural()) {
+            visao.exibirMensagem("O banqueiro verificou a carta oculta: TEM Blackjack natural! "
+                    + "A rodada termina sem novas jogadas.");
+        } else if (ofertou) {
+            visao.exibirMensagem("O banqueiro verificou a carta oculta: NAO tem Blackjack natural.");
+        }
+    }
+
+    private boolean ofertarSeguro(Jogador jogador) {
+        if (jogador.maos().get(0).ehBlackjackNatural()) {
+            return false;
+        }
         int apostaInicial = apostasIniciais.get(jogador).valor();
         if (!avaliadorDeAcoes.seguroDisponivel(banqueiro.cartaVisivel(), jogador.banca(), apostaInicial)) {
-            return;
+            return false;
         }
         int valorMaximo = avaliadorDeAcoes.valorMaximoDoSeguro(apostaInicial);
         visao.exibirMensagem(jogador.nome() + ": a carta visivel do banqueiro e um As. "
@@ -100,6 +128,7 @@ public final class Rodada {
             jogador.banca().sacar(valor);
             jogador.apostarSeguro(new Aposta(valor));
         }
+        return true;
     }
 
     private void jogarTodasAsMaosDe(Jogador jogador) {
@@ -117,6 +146,28 @@ public final class Rodada {
             visao.exibirMao(jogador.nome(), mao, jogador.maos().indexOf(mao) + 1, jogador.maos().size());
             Acao acao = jogador.decidir(mao, disponiveis, contexto);
             aplicarAcao(jogador, mao, acao);
+            if (!mao.estaAtiva()) {
+                exibirMaoEncerrada(jogador, mao, acao);
+            }
+        }
+    }
+
+    private void exibirMaoEncerrada(Jogador jogador, Mao mao, Acao acao) {
+        if (acao == Acao.PARAR) {
+            return;
+        }
+        visao.exibirMao(jogador.nome(), mao, jogador.maos().indexOf(mao) + 1, jogador.maos().size());
+        if (mao.estaEstourada()) {
+            visao.exibirMensagem(jogador.nome() + " estourou!");
+        }
+    }
+
+    private void jogarMaoDoBanqueiro() {
+        ContextoDoJogo contexto = new ContextoDoJogo(banqueiro.cartaVisivel());
+        Mao mao = banqueiro.mao();
+        while (mao.estaAtiva()) {
+            Set<Acao> disponiveis = avaliadorDeAcoes.acoesDaMao(mao, banqueiro.banca());
+            aplicarAcao(banqueiro, mao, banqueiro.decidir(mao, disponiveis, contexto));
         }
     }
 
@@ -144,8 +195,7 @@ public final class Rodada {
     }
 
     private void jogarTurnoDoBanqueiro() {
-        ContextoDoJogo contexto = new ContextoDoJogo(banqueiro.cartaVisivel());
-        jogarMao(banqueiro, banqueiro.mao(), contexto);
+        jogarMaoDoBanqueiro();
         visao.exibirMaoFinalDoBanqueiro(banqueiro);
     }
 

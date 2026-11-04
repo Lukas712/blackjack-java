@@ -14,6 +14,8 @@ public interface PortaDeEntrada {
 
     int lerApostaLimitada(String mensagem, int valorMaximo);
 
+    int lerApostaDaRodada(String mensagem, int apostaAtual, int valorMaximo);
+
     int lerNumeroDeJogadores(int minimo, int maximo);
 
     Acao lerAcao(Set<Acao> acoesDisponiveis);

@@ -51,21 +51,25 @@ class MaoTest {
     }
 
     @Test
-    void podeDividirQuandoAmbasAsCartasTemOMesmoValorBase() {
-        Mao mesmoValor = Mao.distribuirInicial(carta(Valor.OITO), carta(Valor.OITO), new Aposta(10));
-        Mao ambasValemDez = Mao.distribuirInicial(carta(Valor.REI), carta(Valor.DAMA), new Aposta(10));
+    void podeDividirQuandoAmbasAsCartasTemOMesmoValorDeFace() {
+        Mao oitos = Mao.distribuirInicial(carta(Valor.OITO), carta(Valor.OITO), new Aposta(10));
+        Mao reis = Mao.distribuirInicial(carta(Valor.REI), carta(Valor.REI), new Aposta(10));
         Mao ambosAses = Mao.distribuirInicial(carta(Valor.AS), carta(Valor.AS), new Aposta(10));
 
-        assertTrue(mesmoValor.podeDividir());
-        assertTrue(ambasValemDez.podeDividir());
+        assertTrue(oitos.podeDividir());
+        assertTrue(reis.podeDividir());
         assertTrue(ambosAses.podeDividir());
     }
 
     @Test
-    void naoPodeDividirQuandoAsCartasTemValoresBaseDiferentes() {
-        Mao mao = Mao.distribuirInicial(carta(Valor.OITO), carta(Valor.NOVE), new Aposta(10));
+    void naoPodeDividirQuandoAsCartasTemValoresDeFaceDiferentes() {
+        Mao oitoENove = Mao.distribuirInicial(carta(Valor.OITO), carta(Valor.NOVE), new Aposta(10));
+        Mao figurasDiferentes = Mao.distribuirInicial(carta(Valor.REI), carta(Valor.VALETE), new Aposta(10));
+        Mao dezEDama = Mao.distribuirInicial(carta(Valor.DEZ), carta(Valor.DAMA), new Aposta(10));
 
-        assertFalse(mao.podeDividir());
+        assertFalse(oitoENove.podeDividir());
+        assertFalse(figurasDiferentes.podeDividir());
+        assertFalse(dezEDama.podeDividir());
     }
 
     @Test

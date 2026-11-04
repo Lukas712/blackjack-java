@@ -50,6 +50,26 @@ public final class EntradaConsole implements PortaDeEntrada {
     }
 
     @Override
+    public int lerApostaDaRodada(String mensagem, int apostaAtual, int valorMaximo) {
+        while (true) {
+            saida.print(mensagem);
+            String linha = leitor.nextLine().trim();
+            if (linha.isEmpty()) {
+                return apostaAtual;
+            }
+            try {
+                int valor = Integer.parseInt(linha);
+                if (valor >= 1 && valor <= valorMaximo) {
+                    return valor;
+                }
+                saida.printf("Informe um valor entre 1 e %d.%n", valorMaximo);
+            } catch (NumberFormatException e) {
+                saida.println("Entrada invalida. Informe um numero inteiro.");
+            }
+        }
+    }
+
+    @Override
     public int lerNumeroDeJogadores(int minimo, int maximo) {
         while (true) {
             saida.printf("Quantos jogadores (%d a %d)? ", minimo, maximo);

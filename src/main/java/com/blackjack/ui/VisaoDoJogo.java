@@ -8,6 +8,7 @@ import com.blackjack.domain.player.Jogador;
 import com.blackjack.result.Resultado;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -37,7 +38,7 @@ public interface VisaoDoJogo {
 
     void exibirBanca(String nomeDoDono, int saldo);
 
-    void exibirResumoDoJogo(int rodadasJogadas, List<Jogador> jogadores);
+    void exibirResumoDoJogo(int rodadasJogadas, List<Jogador> jogadores, Map<Jogador, Integer> saldosIniciais);
 
     void exibirJogadorRemovido(String nomeDoDono);
 }

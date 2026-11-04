@@ -127,7 +127,7 @@ public final class Mao {
     }
 
     public boolean podeDividir() {
-        return cartas.size() == 2 && cartas.get(0).valorBase() == cartas.get(1).valorBase();
+        return cartas.size() == 2 && cartas.get(0).valor() == cartas.get(1).valor();
     }
 
     public boolean estaAtiva() {

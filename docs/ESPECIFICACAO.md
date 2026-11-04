@@ -44,6 +44,7 @@ como classes as entidades do mundo real do jogo: carta, baralho, ficha/aposta, p
 |----|-----------|
 | RF01 | O sistema deve solicitar a banca inicial do jogador (número inteiro positivo de fichas). |
 | RF02 | O sistema deve solicitar o valor da aposta inicial da rodada `b` (inteiro positivo, `b ≤ banca`). |
+| RF02a | A partir da 2ª rodada, antes da distribuição das cartas, cada jogador pode alterar a aposta (inteiro, `1 ≤ b ≤ banca atual`); Enter mantém a aposta anterior (limitada ao saldo). |
 | RF03 | O sistema deve suportar de 1 a 3 jogadores humanos simultâneos, cada um com sua própria banca e aposta, compartilhando um único baralho com o dealer. |
 | RF04 | No início de cada rodada, devem ser distribuídas 2 cartas para cada jogador e 2 cartas para o dealer (uma visível, uma oculta). |
 
@@ -54,8 +55,8 @@ como classes as entidades do mundo real do jogo: carta, baralho, ficha/aposta, p
 | RF05 | **Hit** | Jogador recebe mais uma carta somada à mão atual. Disponível sempre que a mão estiver ativa e com pontuação < 21. |
 | RF06 | **Stand** | Encerra a jogada da mão, mantendo a pontuação atual. Disponível sempre que a mão estiver ativa. |
 | RF07 | **Double Down** | Dobra a aposta da mão atual (exige saldo em banca ≥ aposta atual da mão), recebe obrigatoriamente **uma única carta adicional** e a mão é encerrada automaticamente. Disponível **somente** como primeira ação da mão. |
-| RF08 | **Split** | Disponível apenas quando a mão possui exatamente 2 cartas de mesmo valor numérico (ou duas figuras) e é a primeira ação. Exige aposta adicional igual à aposta inicial da mão (saldo em banca ≥ aposta). Divide a mão em duas mãos independentes, cada uma recebendo imediatamente uma nova segunda carta. Cada mão resultante é jogada de forma totalmente independente (incluindo possibilidade de novo split, hit, stand, double, conforme regras). |
-| RF09 | **Insurance** | Disponível **apenas no início da rodada**, antes de qualquer outra ação, e **apenas** se a carta visível do dealer for um Ás. Aposta de seguro de até metade da aposta inicial (exige saldo em banca ≥ b/2). |
+| RF08 | **Split** | Disponível apenas quando a mão possui exatamente 2 cartas de mesmo valor de face (ex.: 9-9, K-K; K-Q, J-10 ou K-J não podem ser divididas) e é a primeira ação. Exige aposta adicional igual à aposta inicial da mão (saldo em banca ≥ aposta). Divide a mão em duas mãos independentes, cada uma recebendo imediatamente uma nova segunda carta. Cada mão resultante é jogada de forma totalmente independente (incluindo possibilidade de novo split, hit, stand, double, conforme regras). |
+| RF09 | **Insurance** | Disponível **apenas no início da rodada**, antes de qualquer outra ação, e **apenas** se a carta visível do dealer for um Ás e o jogador **não** tiver Blackjack natural. Aposta de seguro de até metade da aposta inicial (exige saldo em banca ≥ b/2). |
 
 ### 2.3 Regras do Dealer
 
@@ -95,8 +96,8 @@ como classes as entidades do mundo real do jogo: carta, baralho, ficha/aposta, p
 
 | ID | Descrição |
 |----|-----------|
-| RF24 | Exibir as cartas e a pontuação atual de cada mão de cada jogador. |
-| RF25 | Exibir a carta visível do dealer (a carta oculta não é revelada até o fim da rodada). |
+| RF24 | Exibir as cartas e a pontuação atual de cada mão de cada jogador, inclusive logo após cada Hit ou Double Down (mostrando a carta recebida e, se for o caso, o estouro). |
+| RF25 | Exibir a carta visível do dealer. A mão completa do dealer só é revelada após todos os jogadores encerrarem suas mãos (Stand, Double Down ou estouro); as cartas que ele compra não são exibidas uma a uma antes disso. |
 | RF26 | Exibir dinamicamente, para a mão em jogo, apenas as opções válidas no momento (Hit/Stand sempre que ativa e < 21; Double Down somente na 1ª ação com saldo suficiente; Split somente na mão inicial com cartas de mesmo valor e saldo suficiente; Insurance somente no início da rodada, se a carta visível do dealer for Ás e houver saldo suficiente). |
 | RF27 | Ao final das jogadas de todos os jogadores e do dealer, exibir o resultado de cada mão (Vitória, Derrota, Blackjack Natural, Seguro Pago/Perdido ou Empate) e a banca atualizada de cada jogador. |
 | RF28 | Oferecer, ao final de cada rodada, a opção de iniciar nova rodada ou encerrar o jogo. |
@@ -106,7 +107,7 @@ como classes as entidades do mundo real do jogo: carta, baralho, ficha/aposta, p
 | ID | Descrição |
 |----|-----------|
 | RF29 | O jogo encerra quando o jogador optar por sair, ou quando a banca ficar insuficiente para cobrir a aposta mínima. |
-| RF30 | Ao encerrar, o sistema deve exibir o saldo final da banca e o total de rodadas jogadas. |
+| RF30 | Ao encerrar, o sistema deve exibir o saldo final da banca e o total de rodadas jogadas. Para cada jogador cujo saldo final difere do inicial, exibe também o lucro ou o prejuízo; se não houve alteração, nada além do saldo final é exibido. |
 
 ---
 
@@ -141,8 +142,9 @@ arquitetural a múltiplos jogadores. Para remover ambiguidades, assume-se:
 3. **`b` nas regras de saldo mínimo:** para Double Down e Split, `b` refere-se à aposta atual da mão
    sendo jogada (igual à aposta inicial da mão até que ela seja alterada por um double/split
    anterior). Para Insurance, `b` refere-se à aposta inicial da rodada daquele jogador.
-4. **Split de figuras:** duas cartas são consideradas "mesmo valor" para fins de split se têm o mesmo
-   valor numérico de pontuação (ex.: 10-10, 10-J, J-Q, Q-K são todas combinações válidas de 10 pontos).
+4. **Split por cartas iguais:** duas cartas são consideradas "mesmo valor" para fins de split somente se
+   têm o mesmo valor de face, independentemente do naipe (ex.: 9-9, K-K, A-A). Cartas de mesma pontuação
+   mas faces diferentes (10-J, J-Q, Q-K, 10-K) não podem ser divididas.
 5. **Blackjack Natural só é possível na mão original de 2 cartas:** mãos resultantes de split nunca são
    tratadas como Blackjack Natural mesmo que somem 21 com Ás + carta de 10, pois a regra define Natural
    como exclusivo das duas primeiras cartas distribuídas na rodada (consistente com RF17).
@@ -150,8 +152,8 @@ arquitetural a múltiplos jogadores. Para remover ambiguidades, assume-se:
    rodada (a especificação não define uso de múltiplos baralhos/sapatilha nem carta de corte).
 7. **Double Down after Split:** permitido independentemente por mão, respeitando RF07 (ser a primeira
    ação daquela mão específica).
-8. **Banca mínima para iniciar/continuar:** a aposta mínima de referência para o critério de término de
-   jogo (RF29) é a aposta inicial configurada para aquele jogador.
+8. **Banca mínima para iniciar/continuar:** a aposta mínima para o critério de término de
+   jogo (RF29) é de 1 ficha; o jogador pode ajustar a aposta a cada rodada (RF02a).
 
 ---
 
@@ -185,7 +187,7 @@ arquitetural a múltiplos jogadores. Para remover ambiguidades, assume-se:
 | `CalculadoraDePagamento` | serviço (stateless) | Calcula o valor a creditar/debitar na `Banca` do jogador a partir do `Resultado` e da `Aposta`. |
 | `VisaoDoJogo` | interface | Abstrai a exibição de informações (cartas, pontuação, opções, resultados) — permite trocar a saída (console, testes) sem alterar a lógica. |
 | `VisaoConsole` | classe | Implementação de `VisaoDoJogo` que imprime no terminal. |
-| `PortaDeEntrada` | interface | Abstrai a leitura de dados do usuário (configuração inicial, escolha de ação, continuar/sair). |
+| `PortaDeEntrada` | interface | Abstrai a leitura de dados do usuário (configuração inicial, aposta por rodada, escolha de ação, continuar/sair). |
 | `EntradaConsole` | classe | Implementação de `PortaDeEntrada` via `Scanner`/console. |
 | `Rodada` | classe | Orquestra uma rodada completa: distribuição inicial, coleta de seguros, turnos dos jogadores, turno do dealer e liquidação das apostas. |
 | `JogoDeBlackjack` | classe | Controla o laço do jogo: contagem de rodadas, repetição enquanto houver banca suficiente e o jogador quiser continuar, resumo final. |
@@ -441,23 +443,26 @@ com.blackjack
 
 1. `JogoDeBlackjack` verifica se todos os jogadores possuem banca suficiente para a aposta mínima; caso
    contrário, encerra o jogo (RF29/RF30).
-2. Cada jogador informa/confirma a aposta inicial da rodada (`b`).
+2. Cada jogador informa a aposta inicial (1ª rodada) ou ajusta/confirma a aposta da rodada (`b`, RF02a).
 3. `Rodada` cria/embaralha um novo `Baralho` e distribui 2 cartas para cada jogador e 2 para o dealer
    (1 visível, 1 oculta) — RF04.
-4. Se a carta visível do dealer for um Ás, cada jogador (com saldo ≥ b/2) recebe a opção de Insurance
-   — RF09.
+4. O sistema exibe a mão inicial de cada jogador (indicando quem tem Blackjack natural). Em seguida, se a
+   carta visível do dealer for um Ás, cada jogador **sem Blackjack natural** (com saldo ≥ b/2) recebe a opção
+   de Insurance — RF09. Após as decisões de seguro, o sistema informa se o dealer tem ou não Blackjack natural.
+   A carta oculta só é verificada quando a carta visível é Ás (com 10/J/Q/K ela permanece oculta e a rodada segue normalmente). Se o dealer tiver, a rodada termina imediatamente (sem Hit/Stand/Double/Split): jogadores com Blackjack
+   natural empatam e os demais perdem a aposta (o seguro, se houver, é pago 2:1).
 5. Para cada jogador, para cada mão ativa (inclusive novas mãos geradas por Split):
    a. `VisaoDoJogo` exibe cartas, pontuação da mão, carta visível do dealer e as ações disponíveis
       (`AvaliadorDeAcoes`) — RF24–RF26.
    b. O jogador escolhe uma ação válida (Hit, Stand, Double Down ou Split).
-   c. A mão é atualizada; o processo repete até a mão ficar `PARADA` ou `ESTOURADA`.
-6. Após todos os jogadores finalizarem todas as suas mãos, o dealer revela a carta oculta e joga
-   automaticamente conforme RF10/RF11.
+   c. A mão é atualizada e exibida (carta recebida e estouro, quando ocorrer); o processo repete até a mão ficar `PARADA` ou `ESTOURADA`.
+6. Após todos os jogadores finalizarem todas as suas mãos, o dealer joga
+   automaticamente conforme RF10/RF11 e só então sua mão completa é revelada (RF25).
 7. Para cada mão de cada jogador, `ResolvedorDeResultado` determina o `Resultado` e `CalculadoraDePagamento` aplica o
    crédito/débito correspondente na `Banca` do jogador — RF19–RF23.
 8. `VisaoDoJogo` exibe o resultado de cada mão e a banca atualizada — RF27.
 9. O jogo pergunta se o jogador deseja uma nova rodada ou encerrar — RF28. Se sim, e houver banca
-   suficiente, volta ao passo 2; caso contrário, encerra.
+   suficiente (≥ 1 ficha), volta ao passo 2; caso contrário, encerra.
 10. Ao encerrar, `JogoDeBlackjack` exibe o saldo final de cada jogador e o total de rodadas jogadas —
     RF30.
 
@@ -525,7 +530,7 @@ Cenários no estilo *Given/When/Then*, usados como base para os testes automatiz
    *então* Double Down não deve ser oferecido como opção válida.
 
 7. **Split apenas em cartas de mesmo valor**
-   *Dado* que a mão inicial é 10 e Q (ambas valendo 10),
+   *Dado* que a mão inicial é K e K (mesmo valor de face),
    *então* a opção Split deve estar disponível, criando duas mãos independentes, cada uma recebendo uma
    nova carta.
 

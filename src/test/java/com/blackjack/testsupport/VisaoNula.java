@@ -59,7 +59,8 @@ public final class VisaoNula implements VisaoDoJogo {
     }
 
     @Override
-    public void exibirResumoDoJogo(int rodadasJogadas, List<Jogador> jogadores) {
+    public void exibirResumoDoJogo(int rodadasJogadas, List<Jogador> jogadores,
+                                  java.util.Map<Jogador, Integer> saldosIniciais) {
     }
 
     @Override

@@ -23,6 +23,8 @@ import java.util.Random;
  */
 public final class JogoDeBlackjack {
 
+    private static final int APOSTA_MINIMA = 1;
+
     private final List<Jogador> todosOsJogadores;
     private final List<Jogador> jogadoresAtivos;
     private final Map<Jogador, Aposta> apostasBase;
@@ -33,6 +35,7 @@ public final class JogoDeBlackjack {
     private final VisaoDoJogo visao;
     private final PortaDeEntrada entrada;
     private final Random aleatorio;
+    private final Map<Jogador, Integer> saldosIniciais = new HashMap<>();
     private int rodadasJogadas;
 
     public JogoDeBlackjack(List<Jogador> jogadores, Map<Jogador, Aposta> apostasBase, VisaoDoJogo visao,
@@ -40,6 +43,7 @@ public final class JogoDeBlackjack {
         this.todosOsJogadores = List.copyOf(jogadores);
         this.jogadoresAtivos = new ArrayList<>(jogadores);
         this.apostasBase = new HashMap<>(apostasBase);
+        jogadores.forEach(jogador -> saldosIniciais.put(jogador, jogador.banca().saldo()));
         this.visao = visao;
         this.entrada = entrada;
         this.aleatorio = aleatorio;
@@ -51,24 +55,38 @@ public final class JogoDeBlackjack {
             if (jogadoresAtivos.isEmpty()) {
                 break;
             }
+            atualizarApostas();
             jogarUmaRodada();
+            visao.exibirMensagem("");
             if (!entrada.lerSimOuNao("Deseja jogar outra rodada? (S/N) ")) {
                 break;
             }
         }
-        visao.exibirResumoDoJogo(rodadasJogadas, todosOsJogadores);
+        visao.exibirResumoDoJogo(rodadasJogadas, todosOsJogadores, saldosIniciais);
     }
 
     private void removerJogadoresComSaldoInsuficiente() {
         List<Jogador> remover = new ArrayList<>();
         for (Jogador jogador : jogadoresAtivos) {
-            int apostaMinima = apostasBase.get(jogador).valor();
-            if (!jogador.banca().possuiPeloMenos(apostaMinima)) {
+            if (!jogador.banca().possuiPeloMenos(APOSTA_MINIMA)) {
                 remover.add(jogador);
                 visao.exibirJogadorRemovido(jogador.nome());
             }
         }
         jogadoresAtivos.removeAll(remover);
+    }
+
+    private void atualizarApostas() {
+        if (rodadasJogadas == 0) {
+            return;
+        }
+        for (Jogador jogador : jogadoresAtivos) {
+            int saldo = jogador.banca().saldo();
+            int atual = Math.min(apostasBase.get(jogador).valor(), saldo);
+            int nova = entrada.lerApostaDaRodada("Aposta de " + jogador.nome() + " (1 a " + saldo
+                    + ", Enter mantem " + atual + "): ", atual, saldo);
+            apostasBase.put(jogador, new Aposta(nova));
+        }
     }
 
     private void jogarUmaRodada() {
