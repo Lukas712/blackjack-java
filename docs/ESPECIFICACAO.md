@@ -161,34 +161,34 @@ arquitetural a múltiplos jogadores. Para remover ambiguidades, assume-se:
 
 | Classe / Interface | Tipo | Responsabilidade principal |
 |---|---|---|
-| `Suit` | enum | Naipe da carta (Copas, Ouros, Paus, Espadas). |
-| `Rank` | enum | Valor de face da carta (2–10, J, Q, K, A) e seu valor base em pontos. |
-| `Card` | classe (imutável) | Representa uma carta concreta (naipe + valor); sabe informar se é Ás / se vale 10. |
-| `Deck` | classe | Conjunto de 52 cartas; embaralha e distribui (`draw`) cartas; compartilhado entre jogadores. |
-| `ScoreCalculator` | serviço (stateless) | Calcula a pontuação de uma lista de cartas, aplicando o ajuste soft/hard do Ás. |
-| `Score` | value object | Resultado do cálculo: valor total, se é "soft" (com Ás valendo 11) e se estourou. |
-| `HandStatus` | enum | Estado da mão: `ACTIVE`, `STANDING`, `BUSTED`. |
-| `Hand` | classe | Mão genérica de cartas associada a uma aposta; conhece suas cartas, status, se veio de split, se foi dobrada, e delega o cálculo de pontos ao `ScoreCalculator`. Classe comum usada tanto pelo jogador humano quanto pelo dealer. |
-| `Bet` | value object | Valor apostado (aposta principal de uma mão, aposta de seguro). |
-| `Wallet` | classe | Banca de fichas de um jogador: débito, crédito, checagem de saldo suficiente. |
-| `Action` | enum | Ações possíveis: `HIT`, `STAND`, `DOUBLE_DOWN`, `SPLIT`, `INSURANCE`. |
-| `ActionEvaluator` | serviço (stateless) | Calcula, para uma mão/jogador/contexto, o conjunto de ações válidas no momento (regra dinâmica de disponibilidade). |
-| `GameContext` | value object | Informações da rodada necessárias para decisões: carta visível do dealer, aposta inicial, se é a primeira ação da mão etc. |
-| `DecisionProvider` | interface | Abstrai *como* uma decisão de ação é obtida (humano via console, dealer via regra fixa). |
-| `ConsoleDecisionProvider` | classe | Implementação que pergunta ao jogador humano via terminal. |
-| `DealerDecisionProvider` | classe | Implementação que aplica a regra fixa do dealer (hit < 17 / stand ≥ 17). |
-| `Player` | classe abstrata | Jogador genérico: nome, `Wallet`, lista de `Hand` (suporta múltiplas mãos por split), aposta de seguro opcional, e delega decisões ao seu `DecisionProvider`. |
-| `HumanPlayer` | classe | Especialização de `Player` cujas decisões vêm de um `ConsoleDecisionProvider`. |
-| `Dealer` | classe | Especialização de `Player` com `DealerDecisionProvider`; expõe a carta visível e a oculta, não aposta. |
-| `Outcome` | enum | Resultado possível de uma mão: `NATURAL_BLACKJACK_WIN`, `WIN`, `PUSH`, `LOSS`, `INSURANCE_WIN`, `INSURANCE_LOSS`. |
-| `OutcomeResolver` | serviço (stateless) | Compara a mão do jogador com a do dealer e determina o `Outcome`. |
-| `PayoutCalculator` | serviço (stateless) | Calcula o valor a creditar/debitar na `Wallet` do jogador a partir do `Outcome` e da `Bet`. |
-| `GameView` | interface | Abstrai a exibição de informações (cartas, pontuação, opções, resultados) — permite trocar a saída (console, testes) sem alterar a lógica. |
-| `ConsoleGameView` | classe | Implementação de `GameView` que imprime no terminal. |
-| `InputPort` | interface | Abstrai a leitura de dados do usuário (configuração inicial, escolha de ação, continuar/sair). |
-| `ConsoleInputPort` | classe | Implementação de `InputPort` via `Scanner`/console. |
-| `Round` | classe | Orquestra uma rodada completa: distribuição inicial, coleta de seguros, turnos dos jogadores, turno do dealer e liquidação das apostas. |
-| `BlackjackGame` | classe | Controla o laço do jogo: contagem de rodadas, repetição enquanto houver banca suficiente e o jogador quiser continuar, resumo final. |
+| `Naipe` | enum | Naipe da carta (Copas, Ouros, Paus, Espadas). |
+| `Valor` | enum | Valor de face da carta (2–10, J, Q, K, A) e seu valor base em pontos. |
+| `Carta` | classe (imutável) | Representa uma carta concreta (naipe + valor); sabe informar se é Ás / se vale 10. |
+| `Baralho` | classe | Conjunto de 52 cartas; embaralha e distribui (`comprar`) cartas; compartilhado entre jogadores. |
+| `CalculadoraDePontuacao` | serviço (stateless) | Calcula a pontuação de uma lista de cartas, aplicando o ajuste soft/hard do Ás. |
+| `Pontuacao` | value object | Resultado do cálculo: valor total, se é "soft" (com Ás valendo 11) e se estourou. |
+| `EstadoMao` | enum | Estado da mão: `ATIVA`, `PARADA`, `ESTOURADA`. |
+| `Mao` | classe | Mão genérica de cartas associada a uma aposta; conhece suas cartas, status, se veio de split, se foi dobrada, e delega o cálculo de pontos ao `CalculadoraDePontuacao`. Classe comum usada tanto pelo jogador humano quanto pelo dealer. |
+| `Aposta` | value object | Valor apostado (aposta principal de uma mão, aposta de seguro). |
+| `Banca` | classe | Banca de fichas de um jogador: débito, crédito, checagem de saldo suficiente. |
+| `Acao` | enum | Ações possíveis: `PEDIR_CARTA`, `PARAR`, `DOBRAR`, `DIVIDIR`, `SEGURO`. |
+| `AvaliadorDeAcoes` | serviço (stateless) | Calcula, para uma mão/jogador/contexto, o conjunto de ações válidas no momento (regra dinâmica de disponibilidade). |
+| `ContextoDoJogo` | value object | Informações da rodada necessárias para decisões: carta visível do dealer, aposta inicial, se é a primeira ação da mão etc. |
+| `ProvedorDeDecisao` | interface | Abstrai *como* uma decisão de ação é obtida (humano via console, dealer via regra fixa). |
+| `ProvedorDeDecisaoConsole` | classe | Implementação que pergunta ao jogador humano via terminal. |
+| `ProvedorDeDecisaoDoBanqueiro` | classe | Implementação que aplica a regra fixa do dealer (hit < 17 / stand ≥ 17). |
+| `Jogador` | classe abstrata | Jogador genérico: nome, `Banca`, lista de `Mao` (suporta múltiplas mãos por split), aposta de seguro opcional, e delega decisões ao seu `ProvedorDeDecisao`. |
+| `JogadorHumano` | classe | Especialização de `Jogador` cujas decisões vêm de um `ProvedorDeDecisaoConsole`. |
+| `Banqueiro` | classe | Especialização de `Jogador` com `ProvedorDeDecisaoDoBanqueiro`; expõe a carta visível e a oculta, não aposta. |
+| `Resultado` | enum | Resultado possível de uma mão: `VITORIA_BLACKJACK_NATURAL`, `VITORIA`, `EMPATE`, `DERROTA`, `SEGURO_PAGO`, `SEGURO_PERDIDO`. |
+| `ResolvedorDeResultado` | serviço (stateless) | Compara a mão do jogador com a do dealer e determina o `Resultado`. |
+| `CalculadoraDePagamento` | serviço (stateless) | Calcula o valor a creditar/debitar na `Banca` do jogador a partir do `Resultado` e da `Aposta`. |
+| `VisaoDoJogo` | interface | Abstrai a exibição de informações (cartas, pontuação, opções, resultados) — permite trocar a saída (console, testes) sem alterar a lógica. |
+| `VisaoConsole` | classe | Implementação de `VisaoDoJogo` que imprime no terminal. |
+| `PortaDeEntrada` | interface | Abstrai a leitura de dados do usuário (configuração inicial, escolha de ação, continuar/sair). |
+| `EntradaConsole` | classe | Implementação de `PortaDeEntrada` via `Scanner`/console. |
+| `Rodada` | classe | Orquestra uma rodada completa: distribuição inicial, coleta de seguros, turnos dos jogadores, turno do dealer e liquidação das apostas. |
+| `JogoDeBlackjack` | classe | Controla o laço do jogo: contagem de rodadas, repetição enquanto houver banca suficiente e o jogador quiser continuar, resumo final. |
 
 ### 5.2 Diagrama de Classes
 
@@ -196,204 +196,203 @@ arquitetural a múltiplos jogadores. Para remover ambiguidades, assume-se:
 classDiagram
     direction LR
 
-    class Suit {
+    class Naipe {
         <<enumeration>>
-        HEARTS
-        DIAMONDS
-        CLUBS
-        SPADES
+        COPAS
+        OUROS
+        PAUS
+        ESPADAS
     }
 
-    class Rank {
+    class Valor {
         <<enumeration>>
-        TWO .. TEN
-        JACK
-        QUEEN
-        KING
-        ACE
-        +int baseValue()
+        DOIS .. DEZ
+        VALETE
+        DAMA
+        REI
+        AS
+        +int valorBase()
     }
 
-    class Card {
-        -Suit suit
-        -Rank rank
-        +boolean isAce()
-        +boolean isTenValue()
-        +int baseValue()
+    class Carta {
+        -Naipe naipe
+        -Valor valor
+        +boolean ehAs()
+        +boolean valeDez()
+        +int valorBase()
     }
 
-    class Deck {
-        -Deque~Card~ cards
+    class Baralho {
+        -Deque~Carta~ cartas
         -Random rng
-        +void shuffle()
-        +Card draw()
-        +int remainingCards()
+        +void embaralhar()
+        +Carta comprar()
+        +int cartasRestantes()
     }
 
-    class ScoreCalculator {
-        +Score calculate(List~Card~ cards)
+    class CalculadoraDePontuacao {
+        +Pontuacao calcular(List~Carta~ cartas)
     }
 
-    class Score {
+    class Pontuacao {
         -int total
-        -boolean soft
-        +int value()
-        +boolean isSoft()
-        +boolean isBust()
+        -boolean suave
+        +int valor()
+        +boolean ehSuave()
+        +boolean estourou()
     }
 
-    class HandStatus {
+    class EstadoMao {
         <<enumeration>>
-        ACTIVE
-        STANDING
-        BUSTED
+        ATIVA
+        PARADA
+        ESTOURADA
     }
 
-    class Hand {
-        -List~Card~ cards
-        -Bet bet
-        -HandStatus status
-        -boolean doubled
-        -boolean fromSplit
-        +void addCard(Card)
-        +Score currentScore()
-        +boolean isNaturalBlackjack()
-        +boolean isFirstAction()
-        +void stand()
+    class Mao {
+        -List~Carta~ cartas
+        -Aposta aposta
+        -EstadoMao estado
+        -boolean dobrada
+        -boolean vindaDeDivisao
+        +void adicionarCarta(Carta)
+        +Pontuacao pontuacaoAtual()
+        +boolean ehBlackjackNatural()
+        +boolean ehPrimeiraAcao()
+        +void parar()
     }
 
-    class Bet {
-        -int amount
-        +int amount()
+    class Aposta {
+        -int valor
+        +int valor()
     }
 
-    class Wallet {
-        -int balance
-        +void withdraw(int)
-        +void deposit(int)
-        +boolean hasAtLeast(int)
-        +int balance()
+    class Banca {
+        -int saldo
+        +void sacar(int)
+        +void depositar(int)
+        +boolean possuiPeloMenos(int)
+        +int saldo()
     }
 
-    class Action {
+    class Acao {
         <<enumeration>>
-        HIT
-        STAND
-        DOUBLE_DOWN
-        SPLIT
-        INSURANCE
+        PEDIR_CARTA
+        PARAR
+        DOBRAR
+        DIVIDIR
+        SEGURO
     }
 
-    class ActionEvaluator {
-        +Set~Action~ availableActions(Hand, Wallet, GameContext)
+    class AvaliadorDeAcoes {
+        +Set~Acao~ acoesDaMao(Mao, Banca, ContextoDoJogo)
     }
 
-    class GameContext {
-        -Card dealerUpCard
-        -int initialBet
+    class ContextoDoJogo {
+        -Carta cartaVisivelDoBanqueiro
+        -int apostaInicial
     }
 
-    class DecisionProvider {
+    class ProvedorDeDecisao {
         <<interface>>
-        +Action chooseAction(Hand, Set~Action~, GameContext)
+        +Acao escolherAcao(Mao, Set~Acao~, ContextoDoJogo)
     }
 
-    class Player {
+    class Jogador {
         <<abstract>>
-        -String name
-        -Wallet wallet
-        -List~Hand~ hands
-        -DecisionProvider decisionProvider
-        +Action decide(Hand, Set~Action~, GameContext)
-        +List~Hand~ hands()
+        -String nome
+        -Banca banca
+        -List~Mao~ maos
+        -ProvedorDeDecisao provedorDeDecisao
+        +Acao decidir(Mao, Set~Acao~, ContextoDoJogo)
+        +List~Mao~ maos()
     }
 
-    class HumanPlayer
-    class Dealer {
-        +Card upCard()
-        +Card holeCard()
-        +void revealHoleCard()
+    class JogadorHumano
+    class Banqueiro {
+        +Carta cartaVisivel()
+        +Carta cartaOculta()
     }
 
-    class Outcome {
+    class Resultado {
         <<enumeration>>
-        NATURAL_BLACKJACK_WIN
-        WIN
-        PUSH
-        LOSS
-        INSURANCE_WIN
-        INSURANCE_LOSS
+        VITORIA_BLACKJACK_NATURAL
+        VITORIA
+        EMPATE
+        DERROTA
+        SEGURO_PAGO
+        SEGURO_PERDIDO
     }
 
-    class OutcomeResolver {
-        +Outcome resolve(Hand, Dealer)
+    class ResolvedorDeResultado {
+        +Resultado resolverMao(Mao, Mao)
     }
 
-    class PayoutCalculator {
-        +int payout(Bet, Outcome)
+    class CalculadoraDePagamento {
+        +int pagamentoDaMao(Aposta, Resultado)
     }
 
-    class GameView {
+    class VisaoDoJogo {
         <<interface>>
-        +void showHand(Player, Hand)
-        +void showDealerUpCard(Card)
-        +void showAvailableActions(Set~Action~)
-        +void showRoundResult(Player, Hand, Outcome)
+        +void exibirMao(Jogador, Mao)
+        +void exibirCartaVisivelDoBanqueiro(Carta)
+        +void exibirAcoesDisponiveis(Set~Acao~)
+        +void exibirResultadoDaMao(Jogador, Mao, Resultado)
     }
 
-    class Round {
-        -Deck deck
-        -List~Player~ players
-        -Dealer dealer
-        +void play()
+    class Rodada {
+        -Baralho baralho
+        -List~Jogador~ jogadores
+        -Banqueiro banqueiro
+        +void jogar()
     }
 
-    class BlackjackGame {
-        -int roundsPlayed
-        +void start()
+    class JogoDeBlackjack {
+        -int rodadasJogadas
+        +void iniciar()
     }
 
-    Card --> Suit
-    Card --> Rank
-    Deck --> Card
-    Hand --> Card
-    Hand --> Bet
-    Hand --> HandStatus
-    Hand --> ScoreCalculator
-    ScoreCalculator --> Score
-    Player --> Wallet
-    Player --> Hand
-    Player --> DecisionProvider
-    HumanPlayer --|> Player
-    Dealer --|> Player
-    ActionEvaluator --> Action
-    ActionEvaluator --> Hand
-    ActionEvaluator --> GameContext
-    OutcomeResolver --> Outcome
-    PayoutCalculator --> Outcome
-    Round --> Deck
-    Round --> Player
-    Round --> Dealer
-    Round --> ActionEvaluator
-    Round --> OutcomeResolver
-    Round --> PayoutCalculator
-    Round --> GameView
-    BlackjackGame --> Round
+    Carta --> Naipe
+    Carta --> Valor
+    Baralho --> Carta
+    Mao --> Carta
+    Mao --> Aposta
+    Mao --> EstadoMao
+    Mao --> CalculadoraDePontuacao
+    CalculadoraDePontuacao --> Pontuacao
+    Jogador --> Banca
+    Jogador --> Mao
+    Jogador --> ProvedorDeDecisao
+    JogadorHumano --|> Jogador
+    Banqueiro --|> Jogador
+    AvaliadorDeAcoes --> Acao
+    AvaliadorDeAcoes --> Mao
+    AvaliadorDeAcoes --> ContextoDoJogo
+    ResolvedorDeResultado --> Resultado
+    CalculadoraDePagamento --> Resultado
+    Rodada --> Baralho
+    Rodada --> Jogador
+    Rodada --> Banqueiro
+    Rodada --> AvaliadorDeAcoes
+    Rodada --> ResolvedorDeResultado
+    Rodada --> CalculadoraDePagamento
+    Rodada --> VisaoDoJogo
+    JogoDeBlackjack --> Rodada
 ```
 
-> Observação: os nomes de classes/métodos no diagrama seguem a convenção de código Java (inglês),
-> enquanto este documento é redigido em português.
+> Observação: os nomes de classes/métodos no diagrama seguem a convenção de código Java
+> (PascalCase/camelCase), já traduzidos para português, conforme a implementação atual.
 
-### 5.3 Por que `Hand` é uma classe independente (generalização Jogador ↔ Mão)
+### 5.3 Por que `Mao` é uma classe independente (generalização Jogador ↔ Mão)
 
-Conforme solicitado, o tipo `Hand` é desenhado como uma entidade própria, independente de `Player`,
+Conforme solicitado, o tipo `Mao` é desenhado como uma entidade própria, independente de `Jogador`,
 contendo cartas, aposta e estado. Isso permite:
 
-- Um `Player` manter uma **lista** de `Hand` (`List<Hand>`), suportando múltiplas mãos simultâneas após
+- Um `Jogador` manter uma **lista** de `Mao` (`List<Mao>`), suportando múltiplas mãos simultâneas após
   um Split, sem alterar a estrutura do jogador.
-- O `Dealer` reutilizar exatamente a mesma classe `Hand` (sempre com uma única mão, sem aposta),
+- O `Banqueiro` reutilizar exatamente a mesma classe `Mao` (sempre com uma única mão, sem aposta),
   evitando duplicação de lógica de pontuação/estado entre jogador e dealer.
-- Toda a lógica de pontuação, estouro e estado viver dentro de `Hand`/`ScoreCalculator`, testável de
+- Toda a lógica de pontuação, estouro e estado viver dentro de `Mao`/`CalculadoraDePontuacao`, testável de
   forma isolada, sem depender de quem é o dono da mão.
 
 ---
@@ -402,11 +401,11 @@ contendo cartas, aposta e estado. Isso permite:
 
 | Princípio | Aplicação no projeto |
 |---|---|
-| **S** — Responsabilidade Única | Cada classe tem um único motivo para mudar: `Card` só representa uma carta; `Deck` só gerencia o monte de cartas; `ScoreCalculator` só calcula pontuação; `PayoutCalculator` só calcula pagamentos; `GameView` só exibe informação; `Wallet` só controla saldo. |
-| **O** — Aberto/Fechado | Novas regras de decisão (ex.: dealer variante "hit em soft 17") podem ser adicionadas criando uma nova `DecisionProvider`/estratégia, sem alterar `Player`. Novos resultados de pagamento podem ser incluídos no `PayoutCalculator` sem alterar `Hand` ou `Round`. |
-| **L** — Substituição de Liskov | `Dealer` e `HumanPlayer` podem ser usados em qualquer lugar que espera um `Player` (ex.: dentro de `Round`), pois ambos respeitam o mesmo contrato (`decide`, `hands()`), sem exigir checagens de tipo (`instanceof`) no código cliente. |
-| **I** — Segregação de Interfaces | `DecisionProvider` expõe apenas o método de decisão de ação; `GameView` expõe apenas métodos de exibição; `InputPort` expõe apenas leitura de dados. O `Dealer` não é forçado a depender de métodos de leitura de console, pois utiliza sua própria implementação fixa de decisão. |
-| **D** — Inversão de Dependência | `Round`/`Player` dependem das abstrações `DecisionProvider`, `GameView` e `InputPort`, não de implementações concretas de console. Isso permite substituir a interface por uma versão de testes (mocks/stubs) sem alterar a lógica de jogo, e injetar a fonte de aleatoriedade (`Random`) do `Deck` para testes determinísticos. |
+| **S** — Responsabilidade Única | Cada classe tem um único motivo para mudar: `Carta` só representa uma carta; `Baralho` só gerencia o monte de cartas; `CalculadoraDePontuacao` só calcula pontuação; `CalculadoraDePagamento` só calcula pagamentos; `VisaoDoJogo` só exibe informação; `Banca` só controla saldo. |
+| **O** — Aberto/Fechado | Novas regras de decisão (ex.: dealer variante "hit em soft 17") podem ser adicionadas criando uma nova `ProvedorDeDecisao`/estratégia, sem alterar `Jogador`. Novos resultados de pagamento podem ser incluídos no `CalculadoraDePagamento` sem alterar `Mao` ou `Rodada`. |
+| **L** — Substituição de Liskov | `Banqueiro` e `JogadorHumano` podem ser usados em qualquer lugar que espera um `Jogador` (ex.: dentro de `Rodada`), pois ambos respeitam o mesmo contrato (`decidir`, `maos()`), sem exigir checagens de tipo (`instanceof`) no código cliente. |
+| **I** — Segregação de Interfaces | `ProvedorDeDecisao` expõe apenas o método de decisão de ação; `VisaoDoJogo` expõe apenas métodos de exibição; `PortaDeEntrada` expõe apenas leitura de dados. O `Banqueiro` não é forçado a depender de métodos de leitura de console, pois utiliza sua própria implementação fixa de decisão. |
+| **D** — Inversão de Dependência | `Rodada`/`Jogador` dependem das abstrações `ProvedorDeDecisao`, `VisaoDoJogo` e `PortaDeEntrada`, não de implementações concretas de console. Isso permite substituir a interface por uma versão de testes (mocks/stubs) sem alterar a lógica de jogo, e injetar a fonte de aleatoriedade (`Random`) do `Baralho` para testes determinísticos. |
 
 ---
 
@@ -415,51 +414,51 @@ contendo cartas, aposta e estado. Isso permite:
 ```
 com.blackjack
 ├── domain
-│   ├── card      → Suit, Rank, Card
-│   ├── deck      → Deck
-│   ├── hand      → Hand, HandStatus, Score, ScoreCalculator
-│   ├── bet       → Bet, Wallet
-│   ├── action    → Action, ActionEvaluator, GameContext
-│   └── player    → Player, HumanPlayer, Dealer, DecisionProvider,
-│                   ConsoleDecisionProvider, DealerDecisionProvider
+│   ├── card      → Naipe, Valor, Carta
+│   ├── deck      → Baralho
+│   ├── hand      → Mao, EstadoMao, Pontuacao, CalculadoraDePontuacao
+│   ├── bet       → Aposta, Banca
+│   ├── action    → Acao, AvaliadorDeAcoes, ContextoDoJogo
+│   └── player    → Jogador, JogadorHumano, Banqueiro, ProvedorDeDecisao,
+│                   ProvedorDeDecisaoConsole, ProvedorDeDecisaoDoBanqueiro
 ├── result
-│   ├── Outcome
-│   ├── OutcomeResolver
-│   └── PayoutCalculator
+│   ├── Resultado
+│   ├── ResolvedorDeResultado
+│   └── CalculadoraDePagamento
 ├── round
-│   ├── Round
-│   └── BlackjackGame
+│   ├── Rodada
+│   └── JogoDeBlackjack
 ├── ui
-│   ├── GameView, ConsoleGameView
-│   └── InputPort, ConsoleInputPort
+│   ├── VisaoDoJogo, VisaoConsole
+│   └── PortaDeEntrada, EntradaConsole
 └── app
-    └── Main
+    └── main
 ```
 
 ---
 
 ## 8. Fluxo de Execução de uma Rodada
 
-1. `BlackjackGame` verifica se todos os jogadores possuem banca suficiente para a aposta mínima; caso
+1. `JogoDeBlackjack` verifica se todos os jogadores possuem banca suficiente para a aposta mínima; caso
    contrário, encerra o jogo (RF29/RF30).
 2. Cada jogador informa/confirma a aposta inicial da rodada (`b`).
-3. `Round` cria/embaralha um novo `Deck` e distribui 2 cartas para cada jogador e 2 para o dealer
+3. `Rodada` cria/embaralha um novo `Baralho` e distribui 2 cartas para cada jogador e 2 para o dealer
    (1 visível, 1 oculta) — RF04.
 4. Se a carta visível do dealer for um Ás, cada jogador (com saldo ≥ b/2) recebe a opção de Insurance
    — RF09.
 5. Para cada jogador, para cada mão ativa (inclusive novas mãos geradas por Split):
-   a. `GameView` exibe cartas, pontuação da mão, carta visível do dealer e as ações disponíveis
-      (`ActionEvaluator`) — RF24–RF26.
+   a. `VisaoDoJogo` exibe cartas, pontuação da mão, carta visível do dealer e as ações disponíveis
+      (`AvaliadorDeAcoes`) — RF24–RF26.
    b. O jogador escolhe uma ação válida (Hit, Stand, Double Down ou Split).
-   c. A mão é atualizada; o processo repete até a mão ficar `STANDING` ou `BUSTED`.
+   c. A mão é atualizada; o processo repete até a mão ficar `PARADA` ou `ESTOURADA`.
 6. Após todos os jogadores finalizarem todas as suas mãos, o dealer revela a carta oculta e joga
    automaticamente conforme RF10/RF11.
-7. Para cada mão de cada jogador, `OutcomeResolver` determina o `Outcome` e `PayoutCalculator` aplica o
-   crédito/débito correspondente na `Wallet` do jogador — RF19–RF23.
-8. `GameView` exibe o resultado de cada mão e a banca atualizada — RF27.
+7. Para cada mão de cada jogador, `ResolvedorDeResultado` determina o `Resultado` e `CalculadoraDePagamento` aplica o
+   crédito/débito correspondente na `Banca` do jogador — RF19–RF23.
+8. `VisaoDoJogo` exibe o resultado de cada mão e a banca atualizada — RF27.
 9. O jogo pergunta se o jogador deseja uma nova rodada ou encerrar — RF28. Se sim, e houver banca
    suficiente, volta ao passo 2; caso contrário, encerra.
-10. Ao encerrar, `BlackjackGame` exibe o saldo final de cada jogador e o total de rodadas jogadas —
+10. Ao encerrar, `JogoDeBlackjack` exibe o saldo final de cada jogador e o total de rodadas jogadas —
     RF30.
 
 ---
@@ -468,18 +467,18 @@ com.blackjack
 
 ```mermaid
 stateDiagram-v2
-    [*] --> ACTIVE: cartas iniciais distribuídas
-    ACTIVE --> ACTIVE: Hit (soma <= 21)
-    ACTIVE --> BUSTED: Hit (soma > 21)
-    ACTIVE --> STANDING: Stand
-    ACTIVE --> STANDING: Double Down (1 carta, soma <= 21)
-    ACTIVE --> BUSTED: Double Down (1 carta, soma > 21)
-    STANDING --> [*]
-    BUSTED --> [*]
+    [*] --> ATIVA: cartas iniciais distribuídas
+    ATIVA --> ATIVA: Hit (soma <= 21)
+    ATIVA --> ESTOURADA: Hit (soma > 21)
+    ATIVA --> PARADA: Stand
+    ATIVA --> PARADA: Double Down (1 carta, soma <= 21)
+    ATIVA --> ESTOURADA: Double Down (1 carta, soma > 21)
+    PARADA --> [*]
+    ESTOURADA --> [*]
 ```
 
-O flag booleano `doubled` em `Hand` registra se a mão foi encerrada por Double Down (afetando o valor
-da aposta para fins de pagamento), e `fromSplit` indica se a mão se originou de um Split (afetando a
+O flag booleano `dobrada` em `Mao` registra se a mão foi encerrada por Double Down (afetando o valor
+da aposta para fins de pagamento), e `vindaDeDivisao` indica se a mão se originou de um Split (afetando a
 elegibilidade a Blackjack Natural, conforme premissa 5).
 
 ---
