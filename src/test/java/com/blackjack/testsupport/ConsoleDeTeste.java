@@ -1,0 +1,31 @@
+package com.blackjack.testsupport;
+
+import com.blackjack.ui.EntradaConsole;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
+
+/**
+ * Console simulado: alimenta {@link EntradaConsole} com um texto fixo e captura tudo
+ * o que ela imprimiu em resposta.
+ */
+public final class ConsoleDeTeste {
+
+    private final ByteArrayOutputStream saida = new ByteArrayOutputStream();
+    private final EntradaConsole entrada;
+
+    public ConsoleDeTeste(String textoDigitado) {
+        this.entrada = new EntradaConsole(new Scanner(textoDigitado),
+                new PrintStream(saida, true, StandardCharsets.UTF_8));
+    }
+
+    public EntradaConsole entrada() {
+        return entrada;
+    }
+
+    public String saida() {
+        return saida.toString(StandardCharsets.UTF_8);
+    }
+}

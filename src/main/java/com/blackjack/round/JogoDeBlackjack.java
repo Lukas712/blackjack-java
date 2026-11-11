@@ -3,6 +3,7 @@ package com.blackjack.round;
 import com.blackjack.domain.action.AvaliadorDeAcoes;
 import com.blackjack.domain.bet.Aposta;
 import com.blackjack.domain.deck.Baralho;
+import com.blackjack.domain.deck.FabricaDeBaralho;
 import com.blackjack.domain.player.Banqueiro;
 import com.blackjack.domain.player.Jogador;
 import com.blackjack.result.ResolvedorDeResultado;
@@ -34,19 +35,24 @@ public final class JogoDeBlackjack {
     private final CalculadoraDePagamento calculadoraDePagamento = new CalculadoraDePagamento();
     private final VisaoDoJogo visao;
     private final PortaDeEntrada entrada;
-    private final Random aleatorio;
+    private final FabricaDeBaralho fabricaDeBaralho;
     private final Map<Jogador, Integer> saldosIniciais = new HashMap<>();
     private int rodadasJogadas;
 
     public JogoDeBlackjack(List<Jogador> jogadores, Map<Jogador, Aposta> apostasBase, VisaoDoJogo visao,
                             PortaDeEntrada entrada, Random aleatorio) {
+        this(jogadores, apostasBase, visao, entrada, () -> Baralho.novoBaralhoEmbaralhado(aleatorio));
+    }
+
+    public JogoDeBlackjack(List<Jogador> jogadores, Map<Jogador, Aposta> apostasBase, VisaoDoJogo visao,
+                            PortaDeEntrada entrada, FabricaDeBaralho fabricaDeBaralho) {
         this.todosOsJogadores = List.copyOf(jogadores);
         this.jogadoresAtivos = new ArrayList<>(jogadores);
         this.apostasBase = new HashMap<>(apostasBase);
         jogadores.forEach(jogador -> saldosIniciais.put(jogador, jogador.banca().saldo()));
         this.visao = visao;
         this.entrada = entrada;
-        this.aleatorio = aleatorio;
+        this.fabricaDeBaralho = fabricaDeBaralho;
     }
 
     public void iniciar() {
@@ -92,7 +98,7 @@ public final class JogoDeBlackjack {
     private void jogarUmaRodada() {
         rodadasJogadas++;
         visao.exibirInicioDaRodada(rodadasJogadas);
-        Baralho baralho = Baralho.novoBaralhoEmbaralhado(aleatorio);
+        Baralho baralho = fabricaDeBaralho.novoBaralho();
         Rodada rodada = new Rodada(baralho, jogadoresAtivos, banqueiro, apostasBase, avaliadorDeAcoes,
                 resolvedorDeResultado, calculadoraDePagamento, visao);
         rodada.jogar();
