@@ -1,4 +1,4 @@
-package com.blackjack.estrutural;
+package com.blackjack.estr;
 
 import com.blackjack.domain.action.ContextoDoJogo;
 import com.blackjack.domain.card.Carta;

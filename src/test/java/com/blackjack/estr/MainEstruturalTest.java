@@ -1,4 +1,4 @@
-package com.blackjack.estrutural;
+package com.blackjack.estr;
 
 import com.blackjack.app.main;
 import org.junit.jupiter.api.AfterEach;

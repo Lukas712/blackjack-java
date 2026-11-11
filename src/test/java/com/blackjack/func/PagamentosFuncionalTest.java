@@ -1,4 +1,4 @@
-package com.blackjack.funcional;
+package com.blackjack.func;
 
 import com.blackjack.result.Resultado;
 import com.blackjack.testsupport.CenarioDeRodada;

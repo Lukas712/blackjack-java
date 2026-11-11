@@ -1,4 +1,4 @@
-package com.blackjack.funcional;
+package com.blackjack.func;
 
 import com.blackjack.domain.bet.Aposta;
 import com.blackjack.domain.bet.Banca;
