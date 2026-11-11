@@ -5,11 +5,11 @@ import com.blackjack.domain.card.Carta;
 import com.blackjack.domain.card.Valor;
 import com.blackjack.domain.card.Naipe;
 import com.blackjack.domain.hand.Mao;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
-class ResolvedorDeResultadoTest {
+public class ResolvedorDeResultadoTest {
 
     private static Carta carta(Valor valor) {
         return new Carta(Naipe.COPAS, valor);
@@ -18,7 +18,7 @@ class ResolvedorDeResultadoTest {
     private final ResolvedorDeResultado resolvedor = new ResolvedorDeResultado();
 
     @Test
-    void naturalDoJogadorContraBanqueiroSemNaturalVenceComoBlackjackNatural() {
+    public void naturalDoJogadorContraBanqueiroSemNaturalVenceComoBlackjackNatural() {
         Mao jogador = Mao.distribuirInicial(carta(Valor.AS), carta(Valor.REI), new Aposta(10));
         Mao banqueiro = Mao.distribuirInicialDoBanqueiro(carta(Valor.DEZ), carta(Valor.OITO));
 
@@ -26,7 +26,7 @@ class ResolvedorDeResultadoTest {
     }
 
     @Test
-    void ambosComBlackjackNaturalResultaEmEmpate() {
+    public void ambosComBlackjackNaturalResultaEmEmpate() {
         Mao jogador = Mao.distribuirInicial(carta(Valor.AS), carta(Valor.REI), new Aposta(10));
         Mao banqueiro = Mao.distribuirInicialDoBanqueiro(carta(Valor.DAMA), carta(Valor.AS));
 
@@ -34,7 +34,7 @@ class ResolvedorDeResultadoTest {
     }
 
     @Test
-    void naturalDoBanqueiroVenceVinteEUmDoJogadorComTresCartas() {
+    public void naturalDoBanqueiroVenceVinteEUmDoJogadorComTresCartas() {
         Mao jogador = Mao.distribuirInicial(carta(Valor.DEZ), carta(Valor.SEIS), new Aposta(10));
         jogador.adicionarCarta(carta(Valor.CINCO));
         Mao banqueiro = Mao.distribuirInicialDoBanqueiro(carta(Valor.AS), carta(Valor.REI));
@@ -43,7 +43,7 @@ class ResolvedorDeResultadoTest {
     }
 
     @Test
-    void naturalDoJogadorVenceVinteEUmDoBanqueiroComTresCartas() {
+    public void naturalDoJogadorVenceVinteEUmDoBanqueiroComTresCartas() {
         Mao jogador = Mao.distribuirInicial(carta(Valor.AS), carta(Valor.REI), new Aposta(10));
         Mao banqueiro = Mao.distribuirInicialDoBanqueiro(carta(Valor.DEZ), carta(Valor.SEIS));
         banqueiro.adicionarCarta(carta(Valor.CINCO));
@@ -52,7 +52,7 @@ class ResolvedorDeResultadoTest {
     }
 
     @Test
-    void estouroDoJogadorEhSempreDerrotaMesmoSeOBanqueiroTambemEstourar() {
+    public void estouroDoJogadorEhSempreDerrotaMesmoSeOBanqueiroTambemEstourar() {
         Mao jogador = Mao.distribuirInicial(carta(Valor.DEZ), carta(Valor.NOVE), new Aposta(10));
         jogador.adicionarCarta(carta(Valor.CINCO));
         Mao banqueiro = Mao.distribuirInicialDoBanqueiro(carta(Valor.DEZ), carta(Valor.NOVE));
@@ -62,7 +62,7 @@ class ResolvedorDeResultadoTest {
     }
 
     @Test
-    void estouroDoBanqueiroEhVitoriaParaUmaMaoAtivaDoJogador() {
+    public void estouroDoBanqueiroEhVitoriaParaUmaMaoAtivaDoJogador() {
         Mao jogador = Mao.distribuirInicial(carta(Valor.QUATRO), carta(Valor.OITO), new Aposta(10));
         Mao banqueiro = Mao.distribuirInicialDoBanqueiro(carta(Valor.DEZ), carta(Valor.NOVE));
         banqueiro.adicionarCarta(carta(Valor.CINCO));
@@ -71,7 +71,7 @@ class ResolvedorDeResultadoTest {
     }
 
     @Test
-    void pontuacoesIguaisNaoNaturaisResultamEmEmpate() {
+    public void pontuacoesIguaisNaoNaturaisResultamEmEmpate() {
         Mao jogador = Mao.distribuirInicial(carta(Valor.DEZ), carta(Valor.OITO), new Aposta(10));
         Mao banqueiro = Mao.distribuirInicialDoBanqueiro(carta(Valor.NOVE), carta(Valor.NOVE));
 
@@ -79,7 +79,7 @@ class ResolvedorDeResultadoTest {
     }
 
     @Test
-    void pontuacaoNaoNaturalMaiorVenceEAMenorPerde() {
+    public void pontuacaoNaoNaturalMaiorVenceEAMenorPerde() {
         Mao vencedor = Mao.distribuirInicial(carta(Valor.DEZ), carta(Valor.NOVE), new Aposta(10));
         Mao perdedor = Mao.distribuirInicial(carta(Valor.DEZ), carta(Valor.SEIS), new Aposta(10));
         Mao banqueiro = Mao.distribuirInicialDoBanqueiro(carta(Valor.DEZ), carta(Valor.SETE));
@@ -89,7 +89,7 @@ class ResolvedorDeResultadoTest {
     }
 
     @Test
-    void seguroVenceApenasQuandoOBanqueiroTemBlackjackNatural() {
+    public void seguroVenceApenasQuandoOBanqueiroTemBlackjackNatural() {
         Mao banqueiroComNatural = Mao.distribuirInicialDoBanqueiro(carta(Valor.AS), carta(Valor.REI));
         Mao banqueiroSemNatural = Mao.distribuirInicialDoBanqueiro(carta(Valor.AS), carta(Valor.SETE));
 

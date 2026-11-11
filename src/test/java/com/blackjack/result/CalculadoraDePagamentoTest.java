@@ -1,52 +1,52 @@
 package com.blackjack.result;
 
 import com.blackjack.domain.bet.Aposta;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
-class CalculadoraDePagamentoTest {
+public class CalculadoraDePagamentoTest {
 
     private final CalculadoraDePagamento calculadora = new CalculadoraDePagamento();
 
     @Test
-    void vitoriaComumPagaUmParaUmMaisAApostaOriginal() {
+    public void vitoriaComumPagaUmParaUmMaisAApostaOriginal() {
         assertEquals(20, calculadora.pagamentoDaMao(new Aposta(10), Resultado.VITORIA));
     }
 
     @Test
-    void blackjackNaturalPagaTresParaDoisMaisAApostaOriginal() {
+    public void blackjackNaturalPagaTresParaDoisMaisAApostaOriginal() {
         assertEquals(25, calculadora.pagamentoDaMao(new Aposta(10), Resultado.VITORIA_BLACKJACK_NATURAL));
     }
 
     @Test
-    void empateDevolveExatamenteAAposta() {
+    public void empateDevolveExatamenteAAposta() {
         assertEquals(10, calculadora.pagamentoDaMao(new Aposta(10), Resultado.EMPATE));
     }
 
     @Test
-    void derrotaNaoPagaNadaPoisAApostaJaFoiRetirada() {
+    public void derrotaNaoPagaNadaPoisAApostaJaFoiRetirada() {
         assertEquals(0, calculadora.pagamentoDaMao(new Aposta(10), Resultado.DERROTA));
     }
 
     @Test
-    void seguroPagoPagaDoisParaUm() {
+    public void seguroPagoPagaDoisParaUm() {
         assertEquals(30, calculadora.pagamentoDoSeguro(new Aposta(10), Resultado.SEGURO_PAGO));
     }
 
     @Test
-    void seguroPerdidoNaoPagaNada() {
+    public void seguroPerdidoNaoPagaNada() {
         assertEquals(0, calculadora.pagamentoDoSeguro(new Aposta(10), Resultado.SEGURO_PERDIDO));
     }
 
     @Test
-    void pagamentoDaMaoRejeitaResultadosDeSeguro() {
+    public void pagamentoDaMaoRejeitaResultadosDeSeguro() {
         assertThrows(IllegalArgumentException.class, () -> calculadora.pagamentoDaMao(new Aposta(10), Resultado.SEGURO_PAGO));
     }
 
     @Test
-    void pagamentoDoSeguroRejeitaResultadosDeMao() {
+    public void pagamentoDoSeguroRejeitaResultadosDeMao() {
         assertThrows(IllegalArgumentException.class, () -> calculadora.pagamentoDoSeguro(new Aposta(10), Resultado.VITORIA));
     }
 }

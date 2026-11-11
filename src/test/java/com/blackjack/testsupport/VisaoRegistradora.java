@@ -60,7 +60,7 @@ public final class VisaoRegistradora implements VisaoDoJogo {
         return rodadasIniciadas;
     }
 
-    public Integer rodadasDoResumo() {
+    public int rodadasDoResumo() {
         return rodadasDoResumo;
     }
 

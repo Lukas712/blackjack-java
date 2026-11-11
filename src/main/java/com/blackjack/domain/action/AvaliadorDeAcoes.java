@@ -4,7 +4,9 @@ import com.blackjack.domain.bet.Banca;
 import com.blackjack.domain.card.Carta;
 import com.blackjack.domain.hand.Mao;
 
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -19,7 +21,7 @@ public final class AvaliadorDeAcoes {
 
     public Set<Acao> acoesDaMao(Mao mao, Banca banca) {
         if (!mao.estaAtiva()) {
-            return Set.of();
+            return Collections.emptySet();
         }
         Set<Acao> acoes = EnumSet.of(Acao.PARAR);
         if (mao.pontuacaoAtual().valor() < VINTE_E_UM) {
@@ -28,7 +30,7 @@ public final class AvaliadorDeAcoes {
         if (podeOferecerOpcoesDePrimeiraAcao(mao)) {
             adicionarOpcoesDePrimeiraAcao(mao, banca, acoes);
         }
-        return Set.copyOf(acoes);
+        return Collections.unmodifiableSet(acoes);
     }
 
     private boolean podeOferecerOpcoesDePrimeiraAcao(Mao mao) {
@@ -36,7 +38,7 @@ public final class AvaliadorDeAcoes {
     }
 
     private void adicionarOpcoesDePrimeiraAcao(Mao mao, Banca banca, Set<Acao> acoes) {
-        int valorDaAposta = mao.aposta().orElseThrow().valor();
+        int valorDaAposta = mao.aposta().orElseThrow(NoSuchElementException::new).valor();
         if (!banca.possuiPeloMenos(valorDaAposta)) {
             return;
         }

@@ -4,6 +4,7 @@ import com.blackjack.ui.EntradaConsole;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
@@ -18,7 +19,15 @@ public final class ConsoleDeTeste {
 
     public ConsoleDeTeste(String textoDigitado) {
         this.entrada = new EntradaConsole(new Scanner(textoDigitado),
-                new PrintStream(saida, true, StandardCharsets.UTF_8));
+                novoPrintStream(saida));
+    }
+
+    static PrintStream novoPrintStream(ByteArrayOutputStream saida) {
+        try {
+            return new PrintStream(saida, true, StandardCharsets.UTF_8.name());
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     public EntradaConsole entrada() {
@@ -26,6 +35,6 @@ public final class ConsoleDeTeste {
     }
 
     public String saida() {
-        return saida.toString(StandardCharsets.UTF_8);
+        return new String(saida.toByteArray(), StandardCharsets.UTF_8);
     }
 }

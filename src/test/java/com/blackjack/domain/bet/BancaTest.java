@@ -1,16 +1,16 @@
 package com.blackjack.domain.bet;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
-class BancaTest {
+public class BancaTest {
 
     @Test
-    void sacarReduzOSaldo() {
+    public void sacarReduzOSaldo() {
         Banca banca = new Banca(100);
 
         banca.sacar(30);
@@ -19,7 +19,7 @@ class BancaTest {
     }
 
     @Test
-    void depositarAumentaOSaldo() {
+    public void depositarAumentaOSaldo() {
         Banca banca = new Banca(100);
 
         banca.depositar(25);
@@ -28,7 +28,7 @@ class BancaTest {
     }
 
     @Test
-    void possuiPeloMenosRespeitaOLimiteExato() {
+    public void possuiPeloMenosRespeitaOLimiteExato() {
         Banca banca = new Banca(50);
 
         assertTrue(banca.possuiPeloMenos(50));
@@ -36,14 +36,14 @@ class BancaTest {
     }
 
     @Test
-    void sacarMaisDoQueOSaldoLancaExcecao() {
+    public void sacarMaisDoQueOSaldoLancaExcecao() {
         Banca banca = new Banca(10);
 
         assertThrows(IllegalStateException.class, () -> banca.sacar(11));
     }
 
     @Test
-    void saldoInicialNegativoEhRejeitado() {
+    public void saldoInicialNegativoEhRejeitado() {
         assertThrows(IllegalArgumentException.class, () -> new Banca(-1));
     }
 }

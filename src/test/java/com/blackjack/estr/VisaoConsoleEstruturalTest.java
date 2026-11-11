@@ -13,42 +13,42 @@ import com.blackjack.domain.player.JogadorHumano;
 import com.blackjack.result.Resultado;
 import com.blackjack.testsupport.ProvedorDeDecisaoRoteirizado;
 import com.blackjack.ui.VisaoConsole;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * TestSet-Estr: toda a saida de {@link VisaoConsole}, capturada de {@code System.out}.
  */
-class VisaoConsoleEstruturalTest {
+public class VisaoConsoleEstruturalTest {
 
     private final PrintStream saidaOriginal = System.out;
     private final ByteArrayOutputStream capturada = new ByteArrayOutputStream();
     private final VisaoConsole visao = new VisaoConsole();
 
-    @BeforeEach
-    void redirecionarSaida() {
-        System.setOut(new PrintStream(capturada, true, StandardCharsets.UTF_8));
+    @Before
+    public void redirecionarSaida() throws Exception {
+        System.setOut(new PrintStream(capturada, true, "UTF-8"));
     }
 
-    @AfterEach
-    void restaurarSaida() {
+    @After
+    public void restaurarSaida() {
         System.setOut(saidaOriginal);
     }
 
     private String saida() {
-        return capturada.toString(StandardCharsets.UTF_8);
+        return new String(capturada.toByteArray(), StandardCharsets.UTF_8);
     }
 
     private static Carta carta(Valor valor, Naipe naipe) {
@@ -64,8 +64,7 @@ class VisaoConsoleEstruturalTest {
     }
 
     @Test
-    @DisplayName("Boas-vindas, inicio de rodada e mensagem livre")
-    void mensagensGerais() {
+    public void mensagensGerais() {
         visao.exibirBoasVindas();
         visao.exibirInicioDaRodada(3);
         visao.exibirMensagem("mensagem livre");
@@ -76,8 +75,7 @@ class VisaoConsoleEstruturalTest {
     }
 
     @Test
-    @DisplayName("exibirMao: mao unica sem sufixo, pontuacao dura")
-    void maoUnica() {
+    public void maoUnica() {
         visao.exibirMao("Jogador", mao(Valor.DEZ, Valor.SETE), 1, 1);
 
         assertTrue(saida().contains("Jogador: 10\u2665 7\u2666 | Pontuacao: 17"));
@@ -85,8 +83,7 @@ class VisaoConsoleEstruturalTest {
     }
 
     @Test
-    @DisplayName("exibirMao: varias maos mostram indice e pontuacao suave")
-    void variasMaosEPontuacaoSuave() {
+    public void variasMaosEPontuacaoSuave() {
         visao.exibirMao("Jogador", mao(Valor.AS, Valor.SEIS), 2, 3);
 
         assertTrue(saida().contains("Jogador (mao 2/3)"));
@@ -94,8 +91,7 @@ class VisaoConsoleEstruturalTest {
     }
 
     @Test
-    @DisplayName("Carta visivel do banqueiro e a mao final com e sem estouro")
-    void cartasDoBanqueiro() {
+    public void cartasDoBanqueiro() {
         Banqueiro banqueiro = new Banqueiro();
         banqueiro.iniciarNovaRodada(Mao.distribuirInicialDoBanqueiro(carta(Valor.DEZ, Naipe.PAUS),
                 carta(Valor.SETE, Naipe.ESPADAS)));
@@ -114,8 +110,7 @@ class VisaoConsoleEstruturalTest {
     }
 
     @Test
-    @DisplayName("Acoes disponiveis aparecem na ordem do enum com os rotulos de cada acao")
-    void acoesDisponiveis() {
+    public void acoesDisponiveis() {
         visao.exibirAcoesDisponiveis(EnumSet.allOf(Acao.class));
 
         assertTrue(saida().contains(
@@ -123,8 +118,7 @@ class VisaoConsoleEstruturalTest {
     }
 
     @Test
-    @DisplayName("Resultado da mao: todos os resultados, sufixo de maos multiplas e sinal do saldo")
-    void resultadosDaMao() {
+    public void resultadosDaMao() {
         visao.exibirResultadoDaMao("Jogador", 1, 1, Resultado.VITORIA_BLACKJACK_NATURAL, 10, 25);
         visao.exibirResultadoDaMao("Jogador", 1, 1, Resultado.VITORIA, 10, 20);
         visao.exibirResultadoDaMao("Jogador", 1, 1, Resultado.EMPATE, 10, 10);
@@ -142,8 +136,7 @@ class VisaoConsoleEstruturalTest {
     }
 
     @Test
-    @DisplayName("Resultado do seguro: pago (2:1) e perdido")
-    void resultadosDoSeguro() {
+    public void resultadosDoSeguro() {
         visao.exibirResultadoDoSeguro("Jogador", Resultado.SEGURO_PAGO, 5, 15);
         visao.exibirResultadoDoSeguro("Jogador", Resultado.SEGURO_PERDIDO, 5, 0);
 
@@ -152,21 +145,24 @@ class VisaoConsoleEstruturalTest {
     }
 
     @Test
-    @DisplayName("Banca do jogador")
-    void banca() {
+    public void banca() {
         visao.exibirBanca("Jogador", 80);
 
         assertTrue(saida().contains("Banca de Jogador: 80 fichas"));
     }
 
     @Test
-    @DisplayName("Resumo do jogo: lucro, prejuizo e saldo inalterado")
-    void resumoDoJogo() {
+    public void resumoDoJogo() {
         Jogador lucrou = jogadorComSaldo("Ana", 150);
         Jogador perdeu = jogadorComSaldo("Beto", 40);
         Jogador igual = jogadorComSaldo("Caio", 100);
 
-        visao.exibirResumoDoJogo(4, List.of(lucrou, perdeu, igual), Map.of(lucrou, 100, perdeu, 100, igual, 100));
+        Map<Jogador, Integer> saldosIniciais = new HashMap<>();
+        saldosIniciais.put(lucrou, 100);
+        saldosIniciais.put(perdeu, 100);
+        saldosIniciais.put(igual, 100);
+
+        visao.exibirResumoDoJogo(4, Arrays.asList(lucrou, perdeu, igual), saldosIniciais);
 
         String saida = saida();
         assertTrue(saida.contains("FIM DE JOGO"));
@@ -179,8 +175,7 @@ class VisaoConsoleEstruturalTest {
     }
 
     @Test
-    @DisplayName("Jogador removido da mesa")
-    void jogadorRemovido() {
+    public void jogadorRemovido() {
         visao.exibirJogadorRemovido("Jogador");
 
         assertTrue(saida().contains("Jogador ficou sem banca suficiente para a aposta minima e saiu da mesa."));

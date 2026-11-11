@@ -3,10 +3,12 @@ package com.blackjack.ui;
 import com.blackjack.domain.action.Acao;
 import com.blackjack.domain.card.Carta;
 import com.blackjack.domain.hand.Mao;
+import com.blackjack.domain.hand.Pontuacao;
 import com.blackjack.domain.player.Banqueiro;
 import com.blackjack.domain.player.Jogador;
 import com.blackjack.result.Resultado;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -18,19 +20,29 @@ import java.util.stream.Collectors;
  */
 public final class VisaoConsole implements VisaoDoJogo {
 
+    private static final int LARGURA_DO_SEPARADOR = 50;
+    private static final String SEPARADOR_DUPLO = separador('=');
+    private static final String SEPARADOR_SIMPLES = separador('-');
+
+    private static String separador(char caractere) {
+        char[] caracteres = new char[LARGURA_DO_SEPARADOR];
+        Arrays.fill(caracteres, caractere);
+        return new String(caracteres);
+    }
+
     @Override
     public void exibirBoasVindas() {
-        System.out.println("=".repeat(50));
+        System.out.println(SEPARADOR_DUPLO);
         System.out.println("           BLACKJACK (VINTE E UM)");
-        System.out.println("=".repeat(50));
+        System.out.println(SEPARADOR_DUPLO);
     }
 
     @Override
     public void exibirInicioDaRodada(int numeroDaRodada) {
         System.out.println();
-        System.out.println("-".repeat(50));
+        System.out.println(SEPARADOR_SIMPLES);
         System.out.println("Rodada " + numeroDaRodada);
-        System.out.println("-".repeat(50));
+        System.out.println(SEPARADOR_SIMPLES);
     }
 
     @Override
@@ -38,7 +50,7 @@ public final class VisaoConsole implements VisaoDoJogo {
         System.out.println();
         String cartas = formatarCartas(mao);
         String sufixo = totalDeMaos > 1 ? " (mao " + indiceDaMao + "/" + totalDeMaos + ")" : "";
-        var pontuacao = mao.pontuacaoAtual();
+        Pontuacao pontuacao = mao.pontuacaoAtual();
         String rotuloDaPontuacao = pontuacao.ehSuave() ? pontuacao.valor() + " (suave)" : String.valueOf(pontuacao.valor());
         System.out.printf("%s%s: %s | Pontuacao: %s%n", nomeDoDono, sufixo, cartas, rotuloDaPontuacao);
     }
@@ -99,7 +111,7 @@ public final class VisaoConsole implements VisaoDoJogo {
     public void exibirResumoDoJogo(int rodadasJogadas, List<Jogador> jogadores,
                                    Map<Jogador, Integer> saldosIniciais) {
         System.out.println();
-        System.out.println("=".repeat(50));
+        System.out.println(SEPARADOR_DUPLO);
         System.out.println("FIM DE JOGO");
         System.out.println("Total de rodadas jogadas: " + rodadasJogadas);
         for (Jogador jogador : jogadores) {
@@ -114,7 +126,7 @@ public final class VisaoConsole implements VisaoDoJogo {
                         saldosIniciais.get(jogador));
             }
         }
-        System.out.println("=".repeat(50));
+        System.out.println(SEPARADOR_DUPLO);
     }
 
     @Override
@@ -127,22 +139,35 @@ public final class VisaoConsole implements VisaoDoJogo {
     }
 
     private String descreverResultado(Resultado resultado) {
-        return switch (resultado) {
-            case VITORIA_BLACKJACK_NATURAL -> "BLACKJACK NATURAL! Vitoria (3:2)";
-            case VITORIA -> "Vitoria (1:1)";
-            case EMPATE -> "Empate (Push)";
-            case DERROTA -> "Derrota";
-            case SEGURO_PAGO, SEGURO_PERDIDO -> resultado.name();
-        };
+        switch (resultado) {
+            case VITORIA_BLACKJACK_NATURAL:
+                return "BLACKJACK NATURAL! Vitoria (3:2)";
+            case VITORIA:
+                return "Vitoria (1:1)";
+            case EMPATE:
+                return "Empate (Push)";
+            case DERROTA:
+                return "Derrota";
+            case SEGURO_PAGO:
+            case SEGURO_PERDIDO:
+            default:
+                return resultado.name();
+        }
     }
 
     private String descreverAcao(Acao acao) {
-        return switch (acao) {
-            case PEDIR_CARTA -> "[H]it";
-            case PARAR -> "[S]tand";
-            case DOBRAR -> "[D]ouble Down";
-            case DIVIDIR -> "s[P]lit";
-            case SEGURO -> "[I]nsurance";
-        };
+        switch (acao) {
+            case PEDIR_CARTA:
+                return "[H]it";
+            case PARAR:
+                return "[S]tand";
+            case DOBRAR:
+                return "[D]ouble Down";
+            case DIVIDIR:
+                return "s[P]lit";
+            case SEGURO:
+            default:
+                return "[I]nsurance";
+        }
     }
 }

@@ -16,12 +16,11 @@ import com.blackjack.ui.EntradaConsole;
 import com.blackjack.ui.ProvedorDeDecisaoConsole;
 
 import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -34,9 +33,9 @@ public final class CenarioDeRodada {
 
     private final int bancaInicial;
     private final int apostaInicial;
-    private List<Valor> cartasDoJogador = List.of(Valor.DEZ, Valor.SETE);
-    private List<Valor> cartasDoBanqueiro = List.of(Valor.DEZ, Valor.SETE);
-    private List<Valor> proximasCartas = List.of();
+    private List<Valor> cartasDoJogador = Arrays.asList(Valor.DEZ, Valor.SETE);
+    private List<Valor> cartasDoBanqueiro = Arrays.asList(Valor.DEZ, Valor.SETE);
+    private List<Valor> proximasCartas = Collections.emptyList();
     private Acao[] acoes = new Acao[0];
     private final List<Integer> seguros = new ArrayList<>();
     private String entradaDeConsole;
@@ -51,12 +50,12 @@ public final class CenarioDeRodada {
     }
 
     public CenarioDeRodada jogador(Valor primeira, Valor segunda) {
-        this.cartasDoJogador = List.of(primeira, segunda);
+        this.cartasDoJogador = Arrays.asList(primeira, segunda);
         return this;
     }
 
     public CenarioDeRodada banqueiro(Valor visivel, Valor oculta) {
-        this.cartasDoBanqueiro = List.of(visivel, oculta);
+        this.cartasDoBanqueiro = Arrays.asList(visivel, oculta);
         return this;
     }
 
@@ -88,17 +87,18 @@ public final class CenarioDeRodada {
         Banqueiro banqueiro = new Banqueiro();
         Baralho baralho = BaralhoDeTeste.paraRodada(cartasDoJogador, cartasDoBanqueiro, proximasCartas);
 
-        new Rodada(baralho, List.of(jogador), banqueiro, Map.of(jogador, new Aposta(apostaInicial)),
+        new Rodada(baralho, Collections.singletonList(jogador), banqueiro,
+                Collections.singletonMap(jogador, new Aposta(apostaInicial)),
                 new AvaliadorDeAcoes(), new ResolvedorDeResultado(), new CalculadoraDePagamento(), visao).jogar();
 
         return new ResultadoDaRodada(banca, jogador, banqueiro, baralho, visao,
-                saida.toString(StandardCharsets.UTF_8));
+                new String(saida.toByteArray(), StandardCharsets.UTF_8));
     }
 
     private ProvedorDeDecisao criarProvedor(VisaoRegistradora visao, ByteArrayOutputStream saida) {
         if (entradaDeConsole != null) {
             EntradaConsole entrada = new EntradaConsole(new Scanner(entradaDeConsole),
-                    new PrintStream(saida, true, StandardCharsets.UTF_8));
+                    ConsoleDeTeste.novoPrintStream(saida));
             return new ProvedorDeDecisaoConsole(visao, entrada);
         }
         ProvedorDeDecisaoRoteirizado provedor = new ProvedorDeDecisaoRoteirizado(acoes);

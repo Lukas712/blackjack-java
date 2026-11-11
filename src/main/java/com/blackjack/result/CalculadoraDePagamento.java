@@ -11,21 +11,28 @@ import com.blackjack.domain.bet.Aposta;
 public final class CalculadoraDePagamento {
 
     public int pagamentoDaMao(Aposta aposta, Resultado resultado) {
-        return switch (resultado) {
-            case VITORIA_BLACKJACK_NATURAL -> aposta.valor() + (aposta.valor() * 3) / 2;
-            case VITORIA -> aposta.valor() * 2;
-            case EMPATE -> aposta.valor();
-            case DERROTA -> 0;
-            case SEGURO_PAGO, SEGURO_PERDIDO ->
-                    throw new IllegalArgumentException("Resultado de seguro nao se aplica a uma mao: " + resultado);
-        };
+        switch (resultado) {
+            case VITORIA_BLACKJACK_NATURAL:
+                return aposta.valor() + (aposta.valor() * 3) / 2;
+            case VITORIA:
+                return aposta.valor() * 2;
+            case EMPATE:
+                return aposta.valor();
+            case DERROTA:
+                return 0;
+            default:
+                throw new IllegalArgumentException("Resultado de seguro nao se aplica a uma mao: " + resultado);
+        }
     }
 
     public int pagamentoDoSeguro(Aposta apostaDeSeguro, Resultado resultado) {
-        return switch (resultado) {
-            case SEGURO_PAGO -> apostaDeSeguro.valor() * 3;
-            case SEGURO_PERDIDO -> 0;
-            default -> throw new IllegalArgumentException("Resultado de mao nao se aplica a um seguro: " + resultado);
-        };
+        switch (resultado) {
+            case SEGURO_PAGO:
+                return apostaDeSeguro.valor() * 3;
+            case SEGURO_PERDIDO:
+                return 0;
+            default:
+                throw new IllegalArgumentException("Resultado de mao nao se aplica a um seguro: " + resultado);
+        }
     }
 }

@@ -17,6 +17,7 @@ import com.blackjack.ui.VisaoDoJogo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -173,21 +174,30 @@ public final class Rodada {
 
     private void aplicarAcao(Jogador jogador, Mao mao, Acao acao) {
         switch (acao) {
-            case PEDIR_CARTA -> mao.adicionarCarta(baralho.comprar());
-            case PARAR -> mao.parar();
-            case DOBRAR -> aplicarDobrar(jogador, mao);
-            case DIVIDIR -> aplicarDivisao(jogador, mao);
-            default -> throw new IllegalStateException("Acao inesperada durante a jogada da mao: " + acao);
+            case PEDIR_CARTA:
+                mao.adicionarCarta(baralho.comprar());
+                break;
+            case PARAR:
+                mao.parar();
+                break;
+            case DOBRAR:
+                aplicarDobrar(jogador, mao);
+                break;
+            case DIVIDIR:
+                aplicarDivisao(jogador, mao);
+                break;
+            default:
+                throw new IllegalStateException("Acao inesperada durante a jogada da mao: " + acao);
         }
     }
 
     private void aplicarDobrar(Jogador jogador, Mao mao) {
-        jogador.banca().sacar(mao.aposta().orElseThrow().valor());
+        jogador.banca().sacar(mao.aposta().orElseThrow(NoSuchElementException::new).valor());
         mao.dobrar(baralho.comprar());
     }
 
     private void aplicarDivisao(Jogador jogador, Mao mao) {
-        jogador.banca().sacar(mao.aposta().orElseThrow().valor());
+        jogador.banca().sacar(mao.aposta().orElseThrow(NoSuchElementException::new).valor());
         Mao maoIrma = mao.dividir();
         mao.adicionarCarta(baralho.comprar());
         maoIrma.adicionarCarta(baralho.comprar());
@@ -227,7 +237,7 @@ public final class Rodada {
 
     private void liquidarMao(Jogador jogador, Mao mao, int indiceDaMao, int totalDeMaos) {
         Resultado resultado = resolvedorDeResultado.resolverMao(mao, banqueiro.mao());
-        Aposta aposta = mao.aposta().orElseThrow();
+        Aposta aposta = mao.aposta().orElseThrow(NoSuchElementException::new);
         int pagamento = calculadoraDePagamento.pagamentoDaMao(aposta, resultado);
         jogador.banca().depositar(pagamento);
         visao.exibirResultadoDaMao(jogador.nome(), indiceDaMao, totalDeMaos, resultado, aposta.valor(), pagamento);

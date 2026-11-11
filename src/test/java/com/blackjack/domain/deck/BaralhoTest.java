@@ -3,20 +3,21 @@ package com.blackjack.domain.deck;
 import com.blackjack.domain.card.Carta;
 import com.blackjack.domain.card.Valor;
 import com.blackjack.domain.card.Naipe;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
-class BaralhoTest {
+public class BaralhoTest {
 
     @Test
-    void baralhoEmbaralhadoContemCinquentaEDuasCartasUnicas() {
+    public void baralhoEmbaralhadoContemCinquentaEDuasCartasUnicas() {
         Baralho baralho = Baralho.novoBaralhoEmbaralhado(new Random(42));
 
         Set<Carta> vistas = new HashSet<>();
@@ -28,7 +29,7 @@ class BaralhoTest {
     }
 
     @Test
-    void comprarTodasAsCartasEDepoisComprarNovamenteLancaExcecao() {
+    public void comprarTodasAsCartasEDepoisComprarNovamenteLancaExcecao() {
         Baralho baralho = Baralho.novoBaralhoEmbaralhado(new Random(1));
 
         for (int i = 0; i < 52; i++) {
@@ -39,10 +40,10 @@ class BaralhoTest {
     }
 
     @Test
-    void baralhoOrdenadoDistribuiCartasNaOrdemExataFornecida() {
+    public void baralhoOrdenadoDistribuiCartasNaOrdemExataFornecida() {
         Carta primeira = new Carta(Naipe.ESPADAS, Valor.AS);
         Carta segunda = new Carta(Naipe.COPAS, Valor.REI);
-        Baralho baralho = Baralho.baralhoOrdenado(List.of(primeira, segunda));
+        Baralho baralho = Baralho.baralhoOrdenado(Arrays.asList(primeira, segunda));
 
         assertEquals(primeira, baralho.comprar());
         assertEquals(segunda, baralho.comprar());

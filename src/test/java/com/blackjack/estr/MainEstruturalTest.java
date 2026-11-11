@@ -1,10 +1,9 @@
 package com.blackjack.estr;
 
 import com.blackjack.app.main;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -12,25 +11,25 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertTrue;
 
 /**
  * TestSet-Estr: ponto de entrada {@link main}. Com banca = aposta nao ha Double, Split nem Insurance,
  * e Stand esta sempre disponivel; assim a mesma entrada conduz qualquer baralho sorteado ate o fim.
  */
-class MainEstruturalTest {
+public class MainEstruturalTest {
 
     private final InputStream entradaOriginal = System.in;
     private final PrintStream saidaOriginal = System.out;
     private final ByteArrayOutputStream saidaCapturada = new ByteArrayOutputStream();
 
-    @BeforeEach
-    void redirecionarConsole() {
-        System.setOut(new PrintStream(saidaCapturada, true, StandardCharsets.UTF_8));
+    @Before
+    public void redirecionarConsole() throws Exception {
+        System.setOut(new PrintStream(saidaCapturada, true, "UTF-8"));
     }
 
-    @AfterEach
-    void restaurarConsole() {
+    @After
+    public void restaurarConsole() {
         System.setIn(entradaOriginal);
         System.setOut(saidaOriginal);
     }
@@ -38,12 +37,11 @@ class MainEstruturalTest {
     private String executar(String entradaDoUsuario) {
         System.setIn(new ByteArrayInputStream(entradaDoUsuario.getBytes(StandardCharsets.UTF_8)));
         main.main(new String[0]);
-        return saidaCapturada.toString(StandardCharsets.UTF_8);
+        return new String(saidaCapturada.toByteArray(), StandardCharsets.UTF_8);
     }
 
     @Test
-    @DisplayName("Um jogador: configura banca e aposta, joga uma rodada e exibe o resumo final")
-    void umJogador() {
+    public void umJogador() {
         String saida = executar("1\n10\n10\nS\nN\n");
 
         assertTrue(saida.contains("BLACKJACK (VINTE E UM)"));
@@ -54,8 +52,7 @@ class MainEstruturalTest {
     }
 
     @Test
-    @DisplayName("Dois jogadores: rotulos numerados e cada jogador com a propria banca")
-    void doisJogadores() {
+    public void doisJogadores() {
         String saida = executar("2\n10\n10\n10\n10\nS\nS\nN\n");
 
         assertTrue(saida.contains("Banca inicial de Jogador 1: "));

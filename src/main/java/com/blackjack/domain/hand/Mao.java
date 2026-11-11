@@ -4,6 +4,7 @@ import com.blackjack.domain.bet.Aposta;
 import com.blackjack.domain.card.Carta;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -155,7 +156,7 @@ public final class Mao {
     }
 
     public List<Carta> cartas() {
-        return List.copyOf(cartas);
+        return Collections.unmodifiableList(new ArrayList<>(cartas));
     }
 
     private Aposta exigirAposta() {

@@ -4,14 +4,16 @@ import com.blackjack.domain.bet.Aposta;
 import com.blackjack.domain.card.Carta;
 import com.blackjack.domain.card.Valor;
 import com.blackjack.domain.card.Naipe;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.NoSuchElementException;
 
-class MaoTest {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+
+public class MaoTest {
 
     private static Carta carta(Valor valor) {
         return new Carta(Naipe.COPAS, valor);
@@ -22,7 +24,7 @@ class MaoTest {
     }
 
     @Test
-    void blackjackNaturalEhDetectadoIndependentementeDaOrdemDasCartas() {
+    public void blackjackNaturalEhDetectadoIndependentementeDaOrdemDasCartas() {
         Mao asPrimeiro = Mao.distribuirInicial(carta(Valor.AS), carta(Valor.REI), new Aposta(10));
         Mao valorDezPrimeiro = Mao.distribuirInicial(carta(Valor.DAMA), carta(Valor.AS), new Aposta(10));
 
@@ -31,7 +33,7 @@ class MaoTest {
     }
 
     @Test
-    void blackjackNaturalExigeExatamenteDuasCartas() {
+    public void blackjackNaturalExigeExatamenteDuasCartas() {
         Mao mao = Mao.distribuirInicial(carta(Valor.CINCO), carta(Valor.SEIS), new Aposta(10));
         mao.adicionarCarta(carta(Valor.AS));
 
@@ -39,7 +41,7 @@ class MaoTest {
     }
 
     @Test
-    void maoResultanteDeDivisaoNuncaEhUmBlackjackNatural() {
+    public void maoResultanteDeDivisaoNuncaEhUmBlackjackNatural() {
         Mao original = Mao.distribuirInicial(carta(Valor.AS), carta(Valor.AS), new Aposta(10));
 
         Mao irma = original.dividir();
@@ -51,7 +53,7 @@ class MaoTest {
     }
 
     @Test
-    void podeDividirQuandoAmbasAsCartasTemOMesmoValorDeFace() {
+    public void podeDividirQuandoAmbasAsCartasTemOMesmoValorDeFace() {
         Mao oitos = Mao.distribuirInicial(carta(Valor.OITO), carta(Valor.OITO), new Aposta(10));
         Mao reis = Mao.distribuirInicial(carta(Valor.REI), carta(Valor.REI), new Aposta(10));
         Mao ambosAses = Mao.distribuirInicial(carta(Valor.AS), carta(Valor.AS), new Aposta(10));
@@ -62,7 +64,7 @@ class MaoTest {
     }
 
     @Test
-    void naoPodeDividirQuandoAsCartasTemValoresDeFaceDiferentes() {
+    public void naoPodeDividirQuandoAsCartasTemValoresDeFaceDiferentes() {
         Mao oitoENove = Mao.distribuirInicial(carta(Valor.OITO), carta(Valor.NOVE), new Aposta(10));
         Mao figurasDiferentes = Mao.distribuirInicial(carta(Valor.REI), carta(Valor.VALETE), new Aposta(10));
         Mao dezEDama = Mao.distribuirInicial(carta(Valor.DEZ), carta(Valor.DAMA), new Aposta(10));
@@ -73,7 +75,7 @@ class MaoTest {
     }
 
     @Test
-    void ehPrimeiraAcaoTornaSeFalsoAposUmPedirCarta() {
+    public void ehPrimeiraAcaoTornaSeFalsoAposUmPedirCarta() {
         Mao mao = Mao.distribuirInicial(carta(Valor.CINCO), carta(Valor.SEIS), new Aposta(10));
 
         assertTrue(mao.ehPrimeiraAcao());
@@ -84,19 +86,19 @@ class MaoTest {
     }
 
     @Test
-    void dobrarDuplicaAApostaAdicionaExatamenteUmaCartaEEncerraAMao() {
+    public void dobrarDuplicaAApostaAdicionaExatamenteUmaCartaEEncerraAMao() {
         Mao mao = Mao.distribuirInicial(carta(Valor.CINCO), carta(Valor.SEIS), new Aposta(10));
 
         mao.dobrar(carta(Valor.TRES));
 
-        assertEquals(20, mao.aposta().orElseThrow().valor());
+        assertEquals(20, mao.aposta().orElseThrow(NoSuchElementException::new).valor());
         assertEquals(3, mao.cartas().size());
         assertTrue(mao.estaDobrada());
         assertFalse(mao.estaAtiva());
     }
 
     @Test
-    void dobrarComUmaCartaQueEstouraDeixaAMaoEstourada() {
+    public void dobrarComUmaCartaQueEstouraDeixaAMaoEstourada() {
         Mao mao = Mao.distribuirInicial(carta(Valor.REI), carta(Valor.NOVE), new Aposta(10));
 
         mao.dobrar(carta(Valor.CINCO));
@@ -106,7 +108,7 @@ class MaoTest {
     }
 
     @Test
-    void dobrarSoEhPermitidoComoPrimeiraAcao() {
+    public void dobrarSoEhPermitidoComoPrimeiraAcao() {
         Mao mao = Mao.distribuirInicial(carta(Valor.CINCO), carta(Valor.SEIS), new Aposta(10));
         mao.adicionarCarta(carta(Valor.DOIS));
 
@@ -114,27 +116,27 @@ class MaoTest {
     }
 
     @Test
-    void dividirProduzDuasMaosIndependentesComApostasCorrespondentes() {
+    public void dividirProduzDuasMaosIndependentesComApostasCorrespondentes() {
         Mao original = Mao.distribuirInicial(carta(Naipe.COPAS, Valor.OITO), carta(Naipe.ESPADAS, Valor.OITO), new Aposta(10));
 
         Mao irma = original.dividir();
 
         assertEquals(1, original.cartas().size());
         assertEquals(1, irma.cartas().size());
-        assertEquals(10, irma.aposta().orElseThrow().valor());
+        assertEquals(10, irma.aposta().orElseThrow(NoSuchElementException::new).valor());
         assertTrue(original.veioDeDivisao());
         assertTrue(irma.veioDeDivisao());
     }
 
     @Test
-    void dividirLancaExcecaoQuandoAsCartasNaoSaoElegiveis() {
+    public void dividirLancaExcecaoQuandoAsCartasNaoSaoElegiveis() {
         Mao mao = Mao.distribuirInicial(carta(Valor.OITO), carta(Valor.NOVE), new Aposta(10));
 
         assertThrows(IllegalStateException.class, mao::dividir);
     }
 
     @Test
-    void adicionarCartaAposAMaoNaoEstarMaisAtivaLancaExcecao() {
+    public void adicionarCartaAposAMaoNaoEstarMaisAtivaLancaExcecao() {
         Mao mao = Mao.distribuirInicial(carta(Valor.CINCO), carta(Valor.SEIS), new Aposta(10));
         mao.parar();
 
@@ -142,9 +144,9 @@ class MaoTest {
     }
 
     @Test
-    void maoInicialDoBanqueiroNaoTemAposta() {
+    public void maoInicialDoBanqueiroNaoTemAposta() {
         Mao maoDoBanqueiro = Mao.distribuirInicialDoBanqueiro(carta(Valor.DEZ), carta(Valor.SEIS));
 
-        assertTrue(maoDoBanqueiro.aposta().isEmpty());
+        assertFalse(maoDoBanqueiro.aposta().isPresent());
     }
 }

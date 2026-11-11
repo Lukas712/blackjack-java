@@ -12,6 +12,7 @@ import com.blackjack.ui.VisaoDoJogo;
 import com.blackjack.ui.PortaDeEntrada;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +47,7 @@ public final class JogoDeBlackjack {
 
     public JogoDeBlackjack(List<Jogador> jogadores, Map<Jogador, Aposta> apostasBase, VisaoDoJogo visao,
                             PortaDeEntrada entrada, FabricaDeBaralho fabricaDeBaralho) {
-        this.todosOsJogadores = List.copyOf(jogadores);
+        this.todosOsJogadores = Collections.unmodifiableList(new ArrayList<>(jogadores));
         this.jogadoresAtivos = new ArrayList<>(jogadores);
         this.apostasBase = new HashMap<>(apostasBase);
         jogadores.forEach(jogador -> saldosIniciais.put(jogador, jogador.banca().saldo()));

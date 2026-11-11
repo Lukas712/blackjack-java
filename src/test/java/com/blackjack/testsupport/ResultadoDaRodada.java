@@ -8,6 +8,7 @@ import com.blackjack.domain.player.Banqueiro;
 import com.blackjack.domain.player.JogadorHumano;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * Estado observavel de uma rodada ja executada por {@link CenarioDeRodada}.
@@ -52,7 +53,7 @@ public final class ResultadoDaRodada {
     }
 
     public int apostaDaMao(int indice) {
-        return jogador.maos().get(indice).aposta().map(Aposta::valor).orElseThrow();
+        return jogador.maos().get(indice).aposta().map(Aposta::valor).orElseThrow(NoSuchElementException::new);
     }
 
     public int cartasRestantesNoBaralho() {

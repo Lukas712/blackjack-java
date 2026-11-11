@@ -3,7 +3,9 @@ package com.blackjack.ui;
 import com.blackjack.domain.action.Acao;
 
 import java.io.PrintStream;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -12,6 +14,8 @@ import java.util.Set;
  * terminal, validando e repetindo a pergunta ate obter uma resposta aceitavel.
  */
 public final class EntradaConsole implements PortaDeEntrada {
+
+    private static final Map<String, Acao> COMANDOS = criarComandos();
 
     private final Scanner leitor;
     private final PrintStream saida;
@@ -100,14 +104,23 @@ public final class EntradaConsole implements PortaDeEntrada {
     }
 
     private Acao interpretarAcao(String entrada) {
-        return switch (entrada) {
-            case "H", "HIT" -> Acao.PEDIR_CARTA;
-            case "S", "STAND" -> Acao.PARAR;
-            case "D", "DOUBLE", "DOUBLE DOWN", "DOUBLE_DOWN" -> Acao.DOBRAR;
-            case "P", "SPLIT" -> Acao.DIVIDIR;
-            case "I", "INSURANCE" -> Acao.SEGURO;
-            default -> null;
-        };
+        return COMANDOS.get(entrada);
+    }
+
+    private static Map<String, Acao> criarComandos() {
+        Map<String, Acao> comandos = new HashMap<>();
+        registrar(comandos, Acao.PEDIR_CARTA, "H", "HIT");
+        registrar(comandos, Acao.PARAR, "S", "STAND");
+        registrar(comandos, Acao.DOBRAR, "D", "DOUBLE", "DOUBLE DOWN", "DOUBLE_DOWN");
+        registrar(comandos, Acao.DIVIDIR, "P", "SPLIT");
+        registrar(comandos, Acao.SEGURO, "I", "INSURANCE");
+        return comandos;
+    }
+
+    private static void registrar(Map<String, Acao> comandos, Acao acao, String... apelidos) {
+        for (String apelido : apelidos) {
+            comandos.put(apelido, acao);
+        }
     }
 
     @Override

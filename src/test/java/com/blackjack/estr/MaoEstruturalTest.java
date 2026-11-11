@@ -5,18 +5,17 @@ import com.blackjack.domain.card.Carta;
 import com.blackjack.domain.card.Naipe;
 import com.blackjack.domain.card.Valor;
 import com.blackjack.domain.hand.Mao;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 /**
  * TestSet-Estr: caminhos de {@link Mao} nao exercitados pelo TestSet-Func (guardas e excecoes,
  * combinacoes de condicoes de Blackjack Natural e de elegibilidade a Split).
  */
-class MaoEstruturalTest {
+public class MaoEstruturalTest {
 
     private static final Aposta APOSTA = new Aposta(10);
 
@@ -37,8 +36,7 @@ class MaoEstruturalTest {
     }
 
     @Test
-    @DisplayName("Dobrar fora da primeira acao e recusado")
-    void dobrarAposReceberCartaEhRecusado() {
+    public void dobrarAposReceberCartaEhRecusado() {
         Mao mao = mao(Valor.DOIS, Valor.TRES);
         mao.adicionarCarta(carta(Valor.QUATRO));
 
@@ -46,16 +44,14 @@ class MaoEstruturalTest {
     }
 
     @Test
-    @DisplayName("Dobrar mao sem aposta (banqueiro) e recusado")
-    void dobrarMaoSemApostaEhRecusado() {
+    public void dobrarMaoSemApostaEhRecusado() {
         Mao mao = maoDoBanqueiro(Valor.DOIS, Valor.TRES);
 
         assertThrows(IllegalStateException.class, () -> mao.dobrar(carta(Valor.CINCO)));
     }
 
     @Test
-    @DisplayName("Dividir fora da primeira acao e recusado")
-    void dividirAposReceberCartaEhRecusado() {
+    public void dividirAposReceberCartaEhRecusado() {
         Mao mao = mao(Valor.OITO, Valor.OITO);
         mao.adicionarCarta(carta(Valor.DOIS));
 
@@ -63,24 +59,21 @@ class MaoEstruturalTest {
     }
 
     @Test
-    @DisplayName("Dividir cartas de valores diferentes e recusado")
-    void dividirCartasDiferentesEhRecusado() {
+    public void dividirCartasDiferentesEhRecusado() {
         Mao mao = mao(Valor.OITO, Valor.NOVE);
 
         assertThrows(IllegalStateException.class, mao::dividir);
     }
 
     @Test
-    @DisplayName("Dividir mao sem aposta (banqueiro) e recusado")
-    void dividirMaoSemApostaEhRecusado() {
+    public void dividirMaoSemApostaEhRecusado() {
         Mao mao = maoDoBanqueiro(Valor.OITO, Valor.OITO);
 
         assertThrows(IllegalStateException.class, mao::dividir);
     }
 
     @Test
-    @DisplayName("ehPrimeiraAcao e falso em mao ja encerrada")
-    void maoEncerradaNaoEhPrimeiraAcao() {
+    public void maoEncerradaNaoEhPrimeiraAcao() {
         Mao mao = mao(Valor.DEZ, Valor.SETE);
         assertTrue(mao.ehPrimeiraAcao());
 
@@ -90,8 +83,7 @@ class MaoEstruturalTest {
     }
 
     @Test
-    @DisplayName("Mao parada ou estourada nao aceita novas cartas nem nova parada")
-    void maoEncerradaNaoAceitaNovasAcoes() {
+    public void maoEncerradaNaoAceitaNovasAcoes() {
         Mao parada = mao(Valor.DEZ, Valor.SETE);
         parada.parar();
 
@@ -100,8 +92,7 @@ class MaoEstruturalTest {
     }
 
     @Test
-    @DisplayName("Blackjack Natural: Ass+10 e 10+As sao naturais; As+As, 5+6 e maos de 3 cartas nao")
-    void combinacoesDeBlackjackNatural() {
+    public void combinacoesDeBlackjackNatural() {
         assertTrue(mao(Valor.AS, Valor.REI).ehBlackjackNatural());
         assertTrue(mao(Valor.REI, Valor.AS).ehBlackjackNatural());
         assertFalse(mao(Valor.AS, Valor.AS).ehBlackjackNatural());
@@ -114,8 +105,7 @@ class MaoEstruturalTest {
     }
 
     @Test
-    @DisplayName("21 formado em mao oriunda de Split nao e Blackjack Natural")
-    void vinteEUmAposSplitNaoEhNatural() {
+    public void vinteEUmAposSplitNaoEhNatural() {
         Mao original = mao(Valor.REI, Valor.REI);
         original.dividir();
         original.adicionarCarta(carta(Valor.AS));
@@ -125,8 +115,7 @@ class MaoEstruturalTest {
     }
 
     @Test
-    @DisplayName("Split exige duas cartas iguais: K-K sim; J-Q, mao com 1 carta e mao com 3 cartas nao")
-    void elegibilidadeAoSplit() {
+    public void elegibilidadeAoSplit() {
         assertTrue(mao(Valor.REI, Valor.REI).podeDividir());
         assertFalse(mao(Valor.VALETE, Valor.DAMA).podeDividir());
 

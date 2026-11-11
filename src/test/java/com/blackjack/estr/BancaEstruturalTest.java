@@ -2,29 +2,26 @@ package com.blackjack.estr;
 
 import com.blackjack.domain.bet.Aposta;
 import com.blackjack.domain.bet.Banca;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 /**
  * TestSet-Estr: guardas de {@link Banca} e {@link Aposta} (valores invalidos e saldo insuficiente).
  */
-class BancaEstruturalTest {
+public class BancaEstruturalTest {
 
     @Test
-    @DisplayName("Banca nao aceita saldo inicial negativo, mas aceita zero")
-    void saldoInicialNegativoEhRecusado() {
+    public void saldoInicialNegativoEhRecusado() {
         assertThrows(IllegalArgumentException.class, () -> new Banca(-1));
         assertEquals(0, new Banca(0).saldo());
     }
 
     @Test
-    @DisplayName("Sacar valor negativo ou maior que o saldo e recusado sem alterar o saldo")
-    void saqueInvalidoNaoAlteraSaldo() {
+    public void saqueInvalidoNaoAlteraSaldo() {
         Banca banca = new Banca(50);
 
         assertThrows(IllegalArgumentException.class, () -> banca.sacar(-1));
@@ -33,8 +30,7 @@ class BancaEstruturalTest {
     }
 
     @Test
-    @DisplayName("Depositar valor negativo e recusado sem alterar o saldo")
-    void depositoNegativoNaoAlteraSaldo() {
+    public void depositoNegativoNaoAlteraSaldo() {
         Banca banca = new Banca(50);
 
         assertThrows(IllegalArgumentException.class, () -> banca.depositar(-1));
@@ -42,8 +38,7 @@ class BancaEstruturalTest {
     }
 
     @Test
-    @DisplayName("Saque do saldo inteiro e permitido e possuiPeloMenos respeita a fronteira")
-    void saqueDoSaldoInteiro() {
+    public void saqueDoSaldoInteiro() {
         Banca banca = new Banca(50);
 
         assertTrue(banca.possuiPeloMenos(50));
@@ -55,8 +50,7 @@ class BancaEstruturalTest {
     }
 
     @Test
-    @DisplayName("Aposta so aceita valores positivos e dobrada() multiplica por dois")
-    void apostaExigeValorPositivo() {
+    public void apostaExigeValorPositivo() {
         assertThrows(IllegalArgumentException.class, () -> new Aposta(0));
         assertThrows(IllegalArgumentException.class, () -> new Aposta(-5));
         assertEquals(30, new Aposta(15).dobrada().valor());
