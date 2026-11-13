@@ -59,7 +59,7 @@ public class JogoDeBlackjackEstruturalTest {
     @Test
     public void rodadaComBaralhoEmbaralhado() {
         VisaoRegistradora visao = new VisaoRegistradora();
-        ConsoleDeTeste console = new ConsoleDeTeste("S\nN\n");
+        ConsoleDeTeste console = new ConsoleDeTeste("N\n");
         Banca banca = new Banca(10);
         Jogador jogador = new JogadorHumano("Jogador", banca, new ProvedorDeDecisaoConsole(visao, console.entrada()));
 

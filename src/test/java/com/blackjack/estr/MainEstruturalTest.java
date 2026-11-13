@@ -42,7 +42,7 @@ public class MainEstruturalTest {
 
     @Test
     public void umJogador() {
-        String saida = executar("1\n10\n10\nS\nN\n");
+        String saida = executar("1\n10\n10\nN\nS\nN\n");
 
         assertTrue(saida.contains("BLACKJACK (VINTE E UM)"));
         assertTrue(saida.contains("Banca inicial de Jogador: "));
@@ -53,7 +53,7 @@ public class MainEstruturalTest {
 
     @Test
     public void doisJogadores() {
-        String saida = executar("2\n10\n10\n10\n10\nS\nS\nN\n");
+        String saida = executar("2\n10\n10\n10\n10\nN\nS\nN\nS\nN\n");
 
         assertTrue(saida.contains("Banca inicial de Jogador 1: "));
         assertTrue(saida.contains("Aposta inicial de Jogador 2 (<= 10): "));

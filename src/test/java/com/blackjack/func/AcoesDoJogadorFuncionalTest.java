@@ -185,17 +185,31 @@ public class AcoesDoJogadorFuncionalTest {
         assertEquals(160, rodada.saldoFinal());
     }
 
+
     @Test
-    public void ct44_duasFigurasIguaisPodemSerDivididas() {
+    public void ct44_duasFigurasDiferentesPodemSerDivididas() {
         ResultadoDaRodada rodada = CenarioDeRodada.comBancaEAposta(80, 40)
-                .jogador(VALETE, VALETE).banqueiro(DEZ, NOVE).proximasCartas(CINCO, SEIS)
-                .acoes(DIVIDIR, PARAR, PARAR).executar();
+                .jogador(VALETE, DAMA)
+                .banqueiro(DEZ, NOVE)
+                .proximasCartas(CINCO, SEIS)
+                .acoes(DIVIDIR, PARAR, PARAR)
+                .executar();
 
         assertEquals(2, rodada.maosDoJogador().size());
-        assertEquals(Arrays.asList(VALETE, CINCO), valores(rodada.maosDoJogador().get(0)));
-        assertEquals(Arrays.asList(VALETE, SEIS), valores(rodada.maosDoJogador().get(1)));
+
+        assertEquals(
+            Arrays.asList(VALETE, CINCO),
+            valores(rodada.maosDoJogador().get(0))
+        );
+
+        assertEquals(
+            Arrays.asList(DAMA, SEIS),
+            valores(rodada.maosDoJogador().get(1))
+        );
+
         assertEquals(0, rodada.saldoFinal());
     }
+
 
     @Test
     public void ct45_dividirAposAPrimeiraAcaoEhRecusado() {
@@ -220,18 +234,34 @@ public class AcoesDoJogadorFuncionalTest {
         assertEquals(20, rodada.saldoFinal());
     }
 
+
     @Test
     public void ct52_hitComVinteEUmEhRecusado() {
-        ResultadoDaRodada rodada = CenarioDeRodada.comBancaEAposta(100, 40)
-                .jogador(NOVE, NOVE).banqueiro(DEZ, SETE).proximasCartas(TRES)
-                .entradaDeConsole("H\nH\nS\n").executar();
+        ResultadoDaRodada rodada =
+            CenarioDeRodada.comBancaEAposta(100, 40)
+                .jogador(NOVE, NOVE)
+                .banqueiro(DEZ, SETE)
+                .proximasCartas(TRES)
+                .entradaDeConsole("H\n")
+                .executar();
 
-        assertEquals(1, rodada.quantidadeDeRecusas());
-        assertEquals(EnumSet.of(PARAR), rodada.visao().acoesExibidas().get(1));
-        assertEquals(21, rodada.primeiraMao().pontuacaoAtual().valor());
-        assertEquals(3, rodada.primeiraMao().cartas().size());
+        Mao mao = rodada.primeiraMao();
+
+        assertEquals(EstadoMao.PARADA, mao.estado());
+        assertEquals(1, rodada.visao().acoesExibidas().size());
+
+        assertThrows(
+            IllegalStateException.class,
+            () -> mao.adicionarCarta(
+                new Carta(Naipe.PAUS, QUATRO)
+            )
+        );
+
+        assertEquals(21, mao.pontuacaoAtual().valor());
+        assertEquals(3, mao.cartas().size());
         assertEquals(140, rodada.saldoFinal());
     }
+
 
     @Test
     public void ct54_hitAposStandEhRecusado() {
