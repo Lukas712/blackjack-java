@@ -6,7 +6,9 @@ import com.blackjack.domain.card.Naipe;
 import com.blackjack.domain.card.Valor;
 import com.blackjack.domain.hand.Mao;
 import org.junit.Test;
+import com.blackjack.domain.hand.EstadoMao;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -114,10 +116,11 @@ public class MaoEstruturalTest {
         assertFalse(original.ehBlackjackNatural());
     }
 
+
     @Test
     public void elegibilidadeAoSplit() {
         assertTrue(mao(Valor.REI, Valor.REI).podeDividir());
-        assertFalse(mao(Valor.VALETE, Valor.DAMA).podeDividir());
+        assertTrue(mao(Valor.VALETE, Valor.DAMA).podeDividir());
 
         Mao tresCartas = mao(Valor.OITO, Valor.OITO);
         tresCartas.adicionarCarta(carta(Valor.DOIS));
@@ -127,4 +130,26 @@ public class MaoEstruturalTest {
         umaCarta.dividir();
         assertFalse(umaCarta.podeDividir());
     }
+
+    @Test
+    public void dobrarAteVinteEUmEncerraAMao() {
+        Mao mao = mao(Valor.DEZ, Valor.SEIS);
+
+        // Antes de dobrar
+        assertFalse(mao.estaDobrada());
+
+        // 10 + 6 + 5 = 21
+        mao.dobrar(carta(Valor.CINCO));
+
+        // Verifica a dobra
+        assertTrue(mao.estaDobrada());
+
+        // A mao ja foi encerrada automaticamente
+        assertEquals(EstadoMao.PARADA, mao.estado());
+
+        // Confirma a pontuacao
+        assertEquals(21, mao.pontuacaoAtual().valor());
+    }
+
+
 }

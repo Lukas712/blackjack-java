@@ -62,8 +62,13 @@ public final class Mao {
 
     private void adicionarCartaInterno(Carta carta) {
         cartas.add(Objects.requireNonNull(carta, "carta"));
-        if (pontuacaoAtual().estourou()) {
+
+        Pontuacao pontuacao = pontuacaoAtual();
+
+        if (pontuacao.estourou()) {
             estado = EstadoMao.ESTOURADA;
+        } else if (pontuacao.valor() == 21) {
+            estado = EstadoMao.PARADA;
         }
     }
 
@@ -124,12 +129,16 @@ public final class Mao {
     }
 
     public boolean ehPrimeiraAcao() {
-        return estado == EstadoMao.ATIVA && cartas.size() == 2 && !dobrada;
+        return estado == EstadoMao.ATIVA && cartas.size() == 2;
     }
 
+
     public boolean podeDividir() {
-        return cartas.size() == 2 && cartas.get(0).valor() == cartas.get(1).valor();
+        return !vindaDeDivisao
+            && cartas.size() == 2
+            && cartas.get(0).valorBase() == cartas.get(1).valorBase();
     }
+
 
     public boolean estaAtiva() {
         return estado == EstadoMao.ATIVA;

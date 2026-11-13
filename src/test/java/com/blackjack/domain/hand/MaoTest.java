@@ -64,14 +64,19 @@ public class MaoTest {
     }
 
     @Test
-    public void naoPodeDividirQuandoAsCartasTemValoresDeFaceDiferentes() {
-        Mao oitoENove = Mao.distribuirInicial(carta(Valor.OITO), carta(Valor.NOVE), new Aposta(10));
-        Mao figurasDiferentes = Mao.distribuirInicial(carta(Valor.REI), carta(Valor.VALETE), new Aposta(10));
-        Mao dezEDama = Mao.distribuirInicial(carta(Valor.DEZ), carta(Valor.DAMA), new Aposta(10));
+    public void divisaoDependeDoValorNumericoDasCartas() {
+        Mao oitoENove = Mao.distribuirInicial(
+            carta(Valor.OITO), carta(Valor.NOVE), new Aposta(10));
+
+        Mao figurasDiferentes = Mao.distribuirInicial(
+            carta(Valor.REI), carta(Valor.VALETE), new Aposta(10));
+
+        Mao dezEDama = Mao.distribuirInicial(
+            carta(Valor.DEZ), carta(Valor.DAMA), new Aposta(10));
 
         assertFalse(oitoENove.podeDividir());
-        assertFalse(figurasDiferentes.podeDividir());
-        assertFalse(dezEDama.podeDividir());
+        assertTrue(figurasDiferentes.podeDividir());
+        assertTrue(dezEDama.podeDividir());
     }
 
     @Test

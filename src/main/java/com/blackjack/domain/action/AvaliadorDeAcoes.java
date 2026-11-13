@@ -19,23 +19,31 @@ public final class AvaliadorDeAcoes {
 
     private static final int VINTE_E_UM = 21;
 
+
     public Set<Acao> acoesDaMao(Mao mao, Banca banca) {
         if (!mao.estaAtiva()) {
             return Collections.emptySet();
         }
-        Set<Acao> acoes = EnumSet.of(Acao.PARAR);
-        if (mao.pontuacaoAtual().valor() < VINTE_E_UM) {
-            acoes.add(Acao.PEDIR_CARTA);
-        }
+
+        Set<Acao> acoes = EnumSet.of(
+            Acao.PARAR,
+            Acao.PEDIR_CARTA
+        );
+
         if (podeOferecerOpcoesDePrimeiraAcao(mao)) {
             adicionarOpcoesDePrimeiraAcao(mao, banca, acoes);
         }
+
         return Collections.unmodifiableSet(acoes);
     }
 
+
+
     private boolean podeOferecerOpcoesDePrimeiraAcao(Mao mao) {
-        return mao.ehPrimeiraAcao() && mao.aposta().isPresent() && !mao.ehBlackjackNatural();
+        return mao.ehPrimeiraAcao()
+            && mao.aposta().isPresent();
     }
+
 
     private void adicionarOpcoesDePrimeiraAcao(Mao mao, Banca banca, Set<Acao> acoes) {
         int valorDaAposta = mao.aposta().orElseThrow(NoSuchElementException::new).valor();

@@ -66,7 +66,7 @@ public class PagamentosFuncionalTest {
     public void ct15_naturalDoDealerVenceVinteEUmDeTresCartas() {
         ResultadoDaRodada rodada = CenarioDeRodada.comBancaEAposta(100, 40)
                 .jogador(SETE, SETE).banqueiro(VALETE, AS).proximasCartas(SETE)
-                .acoes(PEDIR_CARTA, PARAR).executar();
+                .acoes(PEDIR_CARTA).executar();
 
         assertEquals(21, rodada.primeiraMao().pontuacaoAtual().valor());
         assertEquals(3, rodada.primeiraMao().cartas().size());
