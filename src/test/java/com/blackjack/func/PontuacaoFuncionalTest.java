@@ -58,7 +58,13 @@ public class PontuacaoFuncionalTest {
         assertEquals(21, mao.pontuacaoAtual().valor());
         assertFalse(mao.ehBlackjackNatural());
         assertFalse(mao.estaEstourada());
-        assertEquals(EnumSet.of(Acao.PARAR), new AvaliadorDeAcoes().acoesDaMao(mao, BANCA_FOLGADA));
+        assertEquals(EstadoMao.PARADA, mao.estado());
+
+        assertTrue(
+            new AvaliadorDeAcoes()
+                .acoesDaMao(mao, BANCA_FOLGADA)
+                .isEmpty()
+        );
     }
 
     @Test

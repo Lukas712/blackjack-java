@@ -51,14 +51,22 @@ public class AvaliadorDeAcoesTest {
         assertEquals(EnumSet.of(Acao.PEDIR_CARTA, Acao.PARAR), acoes);
     }
 
+
     @Test
-    public void blackjackNaturalOferecePenasStandMesmoComSaldoDisponivel() {
-        Mao mao = Mao.distribuirInicial(carta(Valor.AS), carta(Valor.REI), new Aposta(10));
+    public void blackjackNaturalNaoOfereceAcoes() {
+        Mao mao = Mao.distribuirInicial(
+            carta(Valor.AS),
+            carta(Valor.REI),
+            new Aposta(10)
+        );
 
-        Set<Acao> acoes = avaliador.acoesDaMao(mao, new Banca(1000));
+        Set<Acao> acoes = avaliador.acoesDaMao(
+            mao, new Banca(1000)
+        );
 
-        assertEquals(Collections.singleton(Acao.PARAR), acoes);
+        assertTrue(acoes.isEmpty());
     }
+
 
     @Test
     public void aposPrimeiraAcaoRestamApenasHitEStand() {

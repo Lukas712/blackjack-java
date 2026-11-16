@@ -19,7 +19,7 @@ public final class Aposta {
     }
 
     public Aposta dobrada() {
-        return new Aposta(valor * 2);
+        return new Aposta(Math.multiplyExact(valor, 2));
     }
 
     @Override

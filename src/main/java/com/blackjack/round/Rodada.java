@@ -114,9 +114,6 @@ public final class Rodada {
     }
 
     private boolean ofertarSeguro(Jogador jogador) {
-        if (jogador.maos().get(0).ehBlackjackNatural()) {
-            return false;
-        }
         int apostaInicial = apostasIniciais.get(jogador).valor();
         if (!avaliadorDeAcoes.seguroDisponivel(banqueiro.cartaVisivel(), jogador.banca(), apostaInicial)) {
             return false;

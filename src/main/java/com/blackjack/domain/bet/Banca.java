@@ -37,6 +37,6 @@ public final class Banca {
         if (valor < 0) {
             throw new IllegalArgumentException("Valor de deposito nao pode ser negativo: " + valor);
         }
-        saldo += valor;
+        saldo = Math.addExact(saldo, valor);
     }
 }

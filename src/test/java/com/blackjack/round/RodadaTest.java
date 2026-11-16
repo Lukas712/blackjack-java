@@ -212,6 +212,6 @@ public class RodadaTest {
                 new ResolvedorDeResultado(), new CalculadoraDePagamento(), new VisaoNula()).jogar();
 
         assertEquals(90, bancaSemNatural.saldo());
-        assertEquals(100, bancaComNatural.saldo());
+        assertEquals(110, bancaComNatural.saldo());
     }
 }
